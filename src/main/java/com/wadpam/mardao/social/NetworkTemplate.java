@@ -4,6 +4,8 @@
 
 package com.wadpam.mardao.social;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,10 +47,10 @@ public class NetworkTemplate {
     static final Set<String> CONTENT_METHODS = new HashSet<String>(CONTENT_METHODS_LIST);
     
     public static final ObjectMapper MAPPER = new ObjectMapper();
-//    static {
-//        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-//        MAPPER.getDeserializationConfig().set(DeserializationConfig.  Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//    }
+    static {
+        MAPPER.setSerializationInclusion(Include.NON_NULL);
+        MAPPER.getDeserializationConfig().without(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    }
 
     protected static final Logger LOG = LoggerFactory.getLogger(NetworkTemplate.class);
     

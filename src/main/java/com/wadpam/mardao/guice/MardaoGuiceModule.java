@@ -7,6 +7,8 @@ import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
 import com.wadpam.mardao.oauth.dao.DConnectionDao;
 import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
+import com.wadpam.mardao.oauth.dao.DFactoryDao;
+import com.wadpam.mardao.oauth.dao.DFactoryDaoBean;
 import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
 import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
 
@@ -27,6 +29,7 @@ public class MardaoGuiceModule extends AbstractModule {
           
           bind(DConnectionDao.class).to(DConnectionDaoBean.class);
           bind(DOAuth2UserDao.class).to(DOAuth2UserDaoBean.class);
+          bind(DFactoryDao.class).to(DFactoryDaoBean.class);
 
           MardaoTransactionManager transactionManager = new MardaoTransactionManager();
           requestInjection(transactionManager);

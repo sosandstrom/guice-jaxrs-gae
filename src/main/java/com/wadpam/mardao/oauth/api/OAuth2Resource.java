@@ -10,6 +10,7 @@ import com.wadpam.mardao.oauth.dao.DConnectionDao;
 import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
 import com.wadpam.mardao.oauth.domain.DConnection;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
+import com.wadpam.mardao.oauth.web.OAuth2Filter;
 import com.wadpam.mardao.social.SocialProfile;
 import com.wadpam.mardao.social.SocialTemplate;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
@@ -32,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author osandstrom
  */
-@Path("api/federated")
+@Path("oauth/federated")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2Resource {
@@ -157,7 +159,9 @@ public class OAuth2Resource {
 
         conn = createConnection(isNewConnection, isNewUser, profile, providerId, providerUserId, userKey, conn, access_token, secret, expiresInSeconds, appArg0, expiredTokens);
 
+        NewCookie cookie = new NewCookie(OAuth2Filter.NAME_ACCESS_TOKEN, conn.getAccessToken(), "/api", null, null, expiresInSeconds, false);
         return Response.status(isNewUser ? Status.CREATED : Status.OK)
+                .cookie(cookie)
                 .entity(conn).build();
     }
     

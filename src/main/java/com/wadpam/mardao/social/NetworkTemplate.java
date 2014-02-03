@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import javax.xml.soap.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,15 +149,23 @@ public class NetworkTemplate {
                     OutputStream out = con.getOutputStream();
                     if (MIME_JSON.equals(contentType)) {
                         MAPPER.writeValue(out, requestBody);
+                        final String json = MAPPER.writeValueAsString(requestBody);
+                            LOG.info("json Content: {}", json);
                     }
                     else {
                         // application/www-form-urlencoded
-                        Map<String, Object> params = MAPPER.convertValue(requestBody, Map.class);
                         PrintWriter writer = new PrintWriter(out);
-                        String content = expandUrl("", params);
-                        writer.print(content.substring(1));
+                        if (requestBody instanceof String) {
+                            writer.print(requestBody);
+                            LOG.info("Content: {}", requestBody);
+                        }
+                        else {
+                            Map<String, Object> params = MAPPER.convertValue(requestBody, Map.class);
+                            String content = expandUrl("", params);
+                            writer.print(content.substring(1));
+                            LOG.info("Content: {}", content.substring(1));
+                        }
                         writer.flush();
-                        LOG.info("Content: {}", content.substring(1));
                     }
                     out.close();
                 }

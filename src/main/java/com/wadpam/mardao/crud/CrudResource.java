@@ -36,9 +36,9 @@ public class CrudResource<T, ID extends Serializable, D extends Dao<T, ID>> {
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(CrudResource.class);
 
-  protected final Dao<T, ID> dao;
+  protected final D dao;
 
-  public CrudResource(Dao<T, ID> dao) {
+  public CrudResource(D dao) {
     this.dao = dao;
   }
 

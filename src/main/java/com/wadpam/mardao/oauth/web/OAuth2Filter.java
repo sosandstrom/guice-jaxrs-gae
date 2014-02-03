@@ -21,6 +21,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.mardao.core.dao.DaoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +69,12 @@ public class OAuth2Filter implements Filter {
             return;
         }
         
+        request.setAttribute(NAME_ACCESS_TOKEN, accessToken);
         request.setAttribute(NAME_CONNECTION, conn);
         request.setAttribute(NAME_USER_KEY, conn.getUserKey());
-        request.setAttribute(NAME_USER_ID, userDaoProvider.get().getSimpleKeyByPrimaryKey(conn.getUserKey()));
+        Long userId = userDaoProvider.get().getSimpleKeyByPrimaryKey(conn.getUserKey());
+        request.setAttribute(NAME_USER_ID, userId);
+        DaoImpl.setPrincipalName(null != userId ? userId.toString() : null);
         chain.doFilter(request, response);
     }
 
@@ -90,6 +94,10 @@ public class OAuth2Filter implements Filter {
         }
         
         return accessToken;
+    }
+    
+    public static Long getUserId(HttpServletRequest request) {
+        return (Long) request.getAttribute(NAME_USER_ID);
     }
 
     private DConnection verifyAccessToken(String accessToken) {

@@ -7,8 +7,10 @@ package com.wadpam.mardao.social;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -93,6 +95,8 @@ public class NetworkTemplate {
             Map<String, String> requestHeaders,
             Object requestBody, Class<J> responseClass, boolean followRedirects) {
         
+        // so that we can read in case of Exception
+        InputStream in = null;
         try {
             
             // expand url?
@@ -180,7 +184,7 @@ public class NetworkTemplate {
             // response content to read and parse?
             if (null != con.getContentType()) {
                 LOG.info("Content-Type: {}", con.getContentType());
-                final InputStream in = con.getInputStream();
+                in = con.getInputStream();
                 
                 if (con.getContentType().startsWith(MIME_JSON)) {
                     response.setBody(MAPPER.readValue(in, responseClass));
@@ -193,6 +197,17 @@ public class NetworkTemplate {
             return response;
         }
         catch (IOException ioe) {
+            if (null != in) {
+                try { 
+                    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                    String s;
+                    while (null != (s = br.readLine())) {
+                        LOG.warn(s);
+                    }
+                }
+                catch (IOException ignore) {
+                }
+            }
             throw new RuntimeException(String.format("NetworkTemplate.exchange: %s", ioe.getMessage()), ioe);
         }
     }

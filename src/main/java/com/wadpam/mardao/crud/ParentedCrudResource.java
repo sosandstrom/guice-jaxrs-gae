@@ -58,7 +58,8 @@ public class ParentedCrudResource<PT, PID extends Serializable, P extends Dao<PT
         final boolean found = dao.delete(parentKey, id);
 
         if (!found) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            // app engine always returns false...
+//            return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.noContent().build();
     }

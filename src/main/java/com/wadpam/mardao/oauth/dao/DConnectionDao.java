@@ -10,7 +10,7 @@ package com.wadpam.mardao.oauth.dao;
  */
 public interface DConnectionDao extends GeneratedDConnectionDao {
     
-    static final String PROVIDER_ID_FACEBOOK = "facebook";
+    static String PROVIDER_ID_FACEBOOK = "facebook";
 
     String getAccessToken(Object userKey, String providerId);
 	

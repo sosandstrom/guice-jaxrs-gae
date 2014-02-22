@@ -9,7 +9,9 @@ package com.wadpam.mardao.oauth.dao;
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public interface DConnectionDao extends GeneratedDConnectionDao {
+    
+    static final String PROVIDER_ID_FACEBOOK = "facebook";
 
-	// TODO: declare your Business Methods here
+    String getAccessToken(Object userKey, String providerId);
 	
 }

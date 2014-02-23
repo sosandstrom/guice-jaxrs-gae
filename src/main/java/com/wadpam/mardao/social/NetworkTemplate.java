@@ -154,20 +154,20 @@ public class NetworkTemplate {
                     if (MIME_JSON.equals(contentType)) {
                         MAPPER.writeValue(out, requestBody);
                         final String json = MAPPER.writeValueAsString(requestBody);
-                            LOG.info("json Content: {}", json);
+                            LOG.debug("json Content: {}", json);
                     }
                     else {
                         // application/www-form-urlencoded
                         PrintWriter writer = new PrintWriter(out);
                         if (requestBody instanceof String) {
                             writer.print(requestBody);
-                            LOG.info("Content: {}", requestBody);
+                            LOG.debug("Content: {}", requestBody);
                         }
                         else {
                             Map<String, Object> params = MAPPER.convertValue(requestBody, Map.class);
                             String content = expandUrl("", params);
                             writer.print(content.substring(1));
-                            LOG.info("Content: {}", content.substring(1));
+                            LOG.debug("Content: {}", content.substring(1));
                         }
                         writer.flush();
                     }
@@ -183,7 +183,7 @@ public class NetworkTemplate {
             
             // response content to read and parse?
             if (null != con.getContentType()) {
-                LOG.info("Content-Type: {}", con.getContentType());
+                LOG.debug("Content-Type: {}", con.getContentType());
                 in = con.getInputStream();
                 
                 if (con.getContentType().startsWith(MIME_JSON)) {

@@ -5,6 +5,9 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
+import com.wadpam.mardao.oauth.api.DConnectionResource;
+import com.wadpam.mardao.oauth.api.DOAuth2UserResource;
+import com.wadpam.mardao.oauth.api.OAuth2Resource;
 import com.wadpam.mardao.oauth.dao.DConnectionDao;
 import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
 import com.wadpam.mardao.oauth.dao.DFactoryDao;
@@ -20,8 +23,6 @@ import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
  */
 public class MardaoGuiceModule extends AbstractModule {
     
-    public static final String JERSEY_PACKAGES = "com.wadpam.mardao.oauth.api";
-
     @Override
     protected void configure() {
           bind(UnitOfWork.class).to(MardaoGuiceUnitOfWork.class);
@@ -31,6 +32,10 @@ public class MardaoGuiceModule extends AbstractModule {
           bind(DOAuth2UserDao.class).to(DOAuth2UserDaoBean.class);
           bind(DFactoryDao.class).to(DFactoryDaoBean.class);
 
+          bind(DConnectionResource.class);
+          bind(DOAuth2UserResource.class);
+          bind(OAuth2Resource.class);
+          
           MardaoTransactionManager transactionManager = new MardaoTransactionManager();
           requestInjection(transactionManager);
           bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), transactionManager);

@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -40,6 +42,7 @@ public class NetworkTemplate {
     
     public static final String MIME_JSON = "application/json";
     public static final String MIME_FORM = "application/x-www-form-urlencoded";
+    public static final String MIME_CHARSET = "charset=";
     
     public static final String SEPARATOR_QUERY = "?";
     public static final String SEPARATOR_FRAGMENT = "#";
@@ -183,12 +186,29 @@ public class NetworkTemplate {
             
             // response content to read and parse?
             if (null != con.getContentType()) {
-                LOG.debug("Content-Type: {}", con.getContentType());
+                final String responseType = con.getContentType();
+                LOG.debug("Content-Type: {}", responseType);
                 in = con.getInputStream();
                 
                 if (con.getContentType().startsWith(MIME_JSON)) {
                     response.setBody(MAPPER.readValue(in, responseClass));
                     LOG.debug("Response JSON: {}", response.getBody());
+                }
+                else if (String.class.equals(responseClass)) {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte b[] = new byte[1024];
+                    int count;
+                    while (0 < (count = in.read(b))) {
+                        baos.write(b, 0, count);
+                    }
+                    String charset = "UTF-8";
+                    int beginIndex = responseType.lastIndexOf(MIME_CHARSET);
+                    if (0 < beginIndex) {
+                        charset = responseType.substring(beginIndex + MIME_CHARSET.length());
+                    }
+                    final String s = baos.toString(charset);
+                    LOG.info("Read {} bytes from {}", s.length(), con.getContentType());
+                    response.setBody((J) s);
                 }
                 
                 in.close();

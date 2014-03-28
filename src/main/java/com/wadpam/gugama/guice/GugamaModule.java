@@ -14,6 +14,7 @@ import com.wadpam.gugama.oauth.dao.DFactoryDao;
 import com.wadpam.gugama.oauth.dao.DFactoryDaoBean;
 import com.wadpam.gugama.oauth.dao.DOAuth2UserDao;
 import com.wadpam.gugama.oauth.dao.DOAuth2UserDaoBean;
+import com.wadpam.gugama.oauth.web.OAuth2Filter;
 
 /**
  * Binds {@link UnitOfWork}, {@link PersistService} and {@link MardaoTransactionManager}.
@@ -32,9 +33,11 @@ public class GugamaModule extends ServletModule {
           bind(DOAuth2UserDao.class).to(DOAuth2UserDaoBean.class);
           bind(DFactoryDao.class).to(DFactoryDaoBean.class);
 
+          filter("/api/*").through(OAuth2Filter.class);
+          
           serve("/api/connection*").with(DConnectionServlet.class);
-          serve("/api/user*").with(DOAuth2UserServlet.class);
-          bind(OAuth2Servlet.class);
+          serve("/api/oauth2user*").with(DOAuth2UserServlet.class);
+          serve("/oauth/*").with(OAuth2Servlet.class);
           
           MardaoTransactionManager transactionManager = new MardaoTransactionManager();
           requestInjection(transactionManager);

@@ -5,6 +5,7 @@
 package com.wadpam.gugama.oauth.api;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import com.wadpam.gugama.crud.CrudServlet;
 import com.wadpam.gugama.oauth.dao.DConnectionDao;
@@ -29,6 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author osandstrom
  */
+@Singleton
 public class OAuth2Servlet extends CrudServlet<DConnection, String> {
     private static final boolean autoCreateUser = true;
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Servlet.class);
@@ -38,7 +40,7 @@ public class OAuth2Servlet extends CrudServlet<DConnection, String> {
     
     @Inject
     public OAuth2Servlet(DConnectionDao connectionDao, DOAuth2UserDao userDao) {
-        super(DConnection.class, String.class, "/oauth/federated/");
+        super(DConnection.class, String.class, "/federated/");
         this.connectionDao = connectionDao;
         this.userDao = userDao;
     }

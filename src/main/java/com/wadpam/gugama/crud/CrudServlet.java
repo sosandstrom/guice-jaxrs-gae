@@ -108,6 +108,7 @@ public abstract class CrudServlet<T, ID extends Serializable> extends HttpServle
         
         setCurrent(request, response);
         final ID id = getId(request);
+        LOGGER.trace("GET {}", id);
         
         if (null != id) {
             T item = get(request, id);
@@ -141,6 +142,7 @@ public abstract class CrudServlet<T, ID extends Serializable> extends HttpServle
         
         setCurrent(request, response);
         final ID id = getId(request);
+        LOGGER.trace("GET {}", id);
         
         if (null != id) {
             

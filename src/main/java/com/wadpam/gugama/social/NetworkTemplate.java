@@ -4,6 +4,7 @@
 
 package com.wadpam.gugama.social;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -193,7 +196,7 @@ public class NetworkTemplate {
                     response.setBody(MAPPER.readValue(in, responseClass));
                     LOG.debug("Response JSON: {}", response.getBody());
                 }
-                else if (String.class.equals(responseClass)) {
+                else {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     byte b[] = new byte[1024];
                     int count;
@@ -205,9 +208,14 @@ public class NetworkTemplate {
                     if (0 < beginIndex) {
                         charset = responseType.substring(beginIndex + MIME_CHARSET.length());
                     }
+                    if (null != con.getContentEncoding()) {
+                        charset = con.getContentEncoding();
+                    }
                     final String s = baos.toString(charset);
                     LOG.info("Read {} bytes from {}", s.length(), con.getContentType());
-                    response.setBody((J) s);
+                    if (String.class.equals(responseClass)) {
+                        response.setBody((J) s);
+                    }
                 }
                 
                 in.close();
@@ -273,6 +281,23 @@ public class NetworkTemplate {
         NetworkResponse<Void> response = exchangeForResponse("GET", url, 
                 requestHeaders, requestParams, Void.class, false);
         return response.getHeader(LOCATION);
+    }
+    
+    public static Map<String,String> parseQueryString(String s) {
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        
+        for (String nameValue : s.split("&")) {
+            String pair[] = nameValue.split("=");
+            if (null != pair && 2 == pair.length) {
+                try {
+                    builder.put(pair[0], URLDecoder.decode(pair[1], "UTF-8"));
+                } catch (UnsupportedEncodingException ex) {
+                    LOG.warn("Decoding {}", pair[1]);
+                }
+            }
+        }
+        
+        return builder.build();
     }
     
     public <J> J  post(String url, Object requestBody, Class<J> responseClass) {

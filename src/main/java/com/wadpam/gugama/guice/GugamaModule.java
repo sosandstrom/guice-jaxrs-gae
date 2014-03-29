@@ -1,5 +1,6 @@
 package com.wadpam.gugama.guice;
 
+import com.google.appengine.repackaged.com.google.common.collect.ImmutableMap;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.Transactional;
@@ -24,6 +25,12 @@ import com.wadpam.gugama.oauth.web.OAuth2Filter;
  */
 public class GugamaModule extends ServletModule {
     
+    private final String registerUri;
+
+    public GugamaModule(String registerUri) {
+        this.registerUri = registerUri;
+    }
+
     @Override
     protected void configureServlets() {
           bind(UnitOfWork.class).to(MardaoGuiceUnitOfWork.class);
@@ -37,7 +44,7 @@ public class GugamaModule extends ServletModule {
           
           serve("/api/connection*").with(DConnectionServlet.class);
           serve("/api/oauth2user*").with(DOAuth2UserServlet.class);
-          serve("/oauth/*").with(OAuth2Servlet.class);
+          serve("/oauth/*").with(OAuth2Servlet.class, ImmutableMap.of(OAuth2Servlet.NAME_REGISTER_URI, registerUri));
           
           MardaoTransactionManager transactionManager = new MardaoTransactionManager();
           requestInjection(transactionManager);

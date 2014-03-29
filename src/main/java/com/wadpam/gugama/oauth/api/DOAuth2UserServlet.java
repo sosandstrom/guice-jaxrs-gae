@@ -15,7 +15,7 @@ public class DOAuth2UserServlet extends MardaoCrudServlet<DOAuth2User, Long, DOA
 
     @Inject
     public DOAuth2UserServlet(DOAuth2UserDao dao) {
-        super(DOAuth2User.class, Long.class, dao, "/user/");
+        super(DOAuth2User.class, Long.class, dao, "/oauth2user/");
     }
     
 }

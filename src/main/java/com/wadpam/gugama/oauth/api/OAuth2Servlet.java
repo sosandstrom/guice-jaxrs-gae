@@ -4,15 +4,19 @@
  */
 package com.wadpam.gugama.oauth.api;
 
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.persist.Transactional;
 import com.wadpam.gugama.crud.CrudServlet;
 import com.wadpam.gugama.oauth.dao.DConnectionDao;
+import com.wadpam.gugama.oauth.dao.DFactoryDao;
 import com.wadpam.gugama.oauth.dao.DOAuth2UserDao;
 import com.wadpam.gugama.oauth.domain.DConnection;
+import com.wadpam.gugama.oauth.domain.DFactory;
 import com.wadpam.gugama.oauth.domain.DOAuth2User;
 import com.wadpam.gugama.oauth.web.OAuth2Filter;
+import com.wadpam.gugama.social.NetworkTemplate;
 import com.wadpam.gugama.social.SocialProfile;
 import com.wadpam.gugama.social.SocialTemplate;
 import java.io.IOException;
@@ -21,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -31,32 +38,68 @@ import org.slf4j.LoggerFactory;
  * @author osandstrom
  */
 @Singleton
-public class OAuth2Servlet extends CrudServlet<DConnection, String> {
+public class OAuth2Servlet extends HttpServlet {
     private static final boolean autoCreateUser = true;
+    public static final String NAME_REGISTER_URI = "OAuth2Servlet.register_uri";
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Servlet.class);
     
     private final DConnectionDao connectionDao;
+    private final DFactoryDao factoryDao;
     private final DOAuth2UserDao userDao;
+    private String registerUri;
     
     @Inject
-    public OAuth2Servlet(DConnectionDao connectionDao, DOAuth2UserDao userDao) {
-        super(DConnection.class, String.class, "/federated/");
+    public OAuth2Servlet(DConnectionDao connectionDao, DFactoryDao factoryDao, 
+            DOAuth2UserDao userDao) {
         this.connectionDao = connectionDao;
+        this.factoryDao = factoryDao;
         this.userDao = userDao;
     }
 
     @Override
-    protected DConnection get(HttpServletRequest request, String providerId) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        final String providerId = CrudServlet.getFileString("/federated/", request.getRequestURI());
+        final String code = request.getParameter("code");
+        if (null != code) {
+            StringBuilder sb = new StringBuilder()
+                    .append(request.getScheme())
+                    .append("://")
+                    .append(request.getHeader("Host"))
+                    .append(request.getRequestURI());
+            String redirectURI = exchangeCode(response, providerId, code, sb.toString());
+            CrudServlet.writeResponse(response, HttpServletResponse.SC_MOVED_TEMPORARILY, redirectURI);
+        }
+        else {
+            CrudServlet.writeResponse(response, HttpServletResponse.SC_BAD_REQUEST, null);
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        final String providerId = CrudServlet.getFileString("/federated/", request.getRequestURI());
         final String providerUserId = request.getParameter("providerUserId");
         final String access_token = request.getParameter("access_token");
         final String secret = request.getParameter("secret");
-        final String expiresInString = getParameter(request, "expires_in", "3600");
+        final String expiresInString = CrudServlet.getParameter(request, "expires_in", "3600");
         final String appArg0 = request.getParameter("appArg0");
-        
-        Map.Entry<Integer, DConnection> response = registerFederated(access_token, providerId, providerUserId, 
+
+        Map.Entry<Integer, DConnection> res = registerFederated(response, access_token, providerId, providerUserId, 
                                                 secret, Integer.parseInt(expiresInString), appArg0);
-        return response.getValue();
+        
+        CrudServlet.writeResponse(response, res.getKey(), res.getValue());
     }
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        
+        if (SystemProperty.Environment.Value.Development == SystemProperty.environment.value()) {
+            factoryDao.persist(SocialTemplate.PROVIDER_ID_FACEBOOK, "https://graph.facebook.com", "1392532967689787", "06ae8184f58bb9348b2d8404b05879cb");
+        }
+        
+        registerUri = config.getInitParameter(NAME_REGISTER_URI);
+    }
+    
     
     
     /**
@@ -69,6 +112,7 @@ public class OAuth2Servlet extends CrudServlet<DConnection, String> {
      * @return the userId associated with the Connection, null if new Connection
      */
     protected Map.Entry<Integer, DConnection> registerFederated(
+            HttpServletResponse response,
             String access_token, 
             String providerId,
             String providerUserId,
@@ -124,7 +168,7 @@ public class OAuth2Servlet extends CrudServlet<DConnection, String> {
 
         conn = createConnection(isNewConnection, isNewUser, profile, providerId, providerUserId, userKey, conn, access_token, secret, expiresInSeconds, appArg0, expiredTokens);
 
-        addCookie(OAuth2Filter.NAME_ACCESS_TOKEN, conn.getAccessToken(), "/api", expiresInSeconds);
+        CrudServlet.addCookie(response, OAuth2Filter.NAME_ACCESS_TOKEN, conn.getAccessToken(), "/api", expiresInSeconds);
         return new AbstractMap.SimpleImmutableEntry<>(isNewUser ? HttpServletResponse.SC_CREATED : HttpServletResponse.SC_OK, conn);
     }
     
@@ -159,6 +203,7 @@ public class OAuth2Servlet extends CrudServlet<DConnection, String> {
             if (isNewUser && autoCreateUser && null != userDao) {
                 user = userDao.persist(null, profile.getDisplayName(), profile.getEmail(), 
                         profile.getProfileUrl(), null, null);
+                LOGGER.debug("Created OAuth2User for {}, id={}", profile.getDisplayName(), user.getId());
                 userKey = userDao.getPrimaryKey(user);
             }
 
@@ -196,5 +241,21 @@ public class OAuth2Servlet extends CrudServlet<DConnection, String> {
         connectionDao.update(conn);
         connectionDao.delete(userKey, expiredTokens);
         return conn;
+    }
+
+    protected String exchangeCode(HttpServletResponse response, String providerId, 
+            String code, String redirectURI) throws ServletException, IOException {
+        // load factory
+        DFactory factory = factoryDao.findByPrimaryKey(providerId);
+        if (null == factory) {
+            throw new ServletException("No such provider " + providerId);
+        }
+        
+        SocialTemplate template = SocialTemplate.create(providerId, factory.getClientId(), factory.getClientSecret());
+        Map.Entry<String, Integer> tokenExpires = template.exchangeCode(code, redirectURI);
+        Map.Entry<Integer, DConnection> statusConnection = 
+                registerFederated(response, tokenExpires.getKey(), providerId, null, null, tokenExpires.getValue(), null);
+        return HttpServletResponse.SC_CREATED == statusConnection.getKey() ?
+                registerUri : "/home.html";
     }
 }

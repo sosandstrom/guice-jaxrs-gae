@@ -36,6 +36,7 @@ public abstract class CrudServlet<T, ID extends Serializable> extends HttpServle
     public static final String LOCATION = "Location";
     public static final String METHOD = "_method";
     public static final String MIME_JSON = "application/json";
+    public static final String MIME_JSON_UTF8 = "application/json; charset=UTF-8";
     public static final String PAGE_SIZE = "pageSize";
     public static final String PATH_PREFIX = "path.prefix";
     public static final String POST = "POST";
@@ -73,12 +74,17 @@ public abstract class CrudServlet<T, ID extends Serializable> extends HttpServle
             pathPrefix = config.getInitParameter(PATH_PREFIX);
         }
     }
-    
-    protected void addCookie(String name, String value, String path, int maxAge) {
+
+    public static Cookie addCookie(HttpServletResponse response, String name, String value, String path, int maxAge) {
         Cookie c = new Cookie(name, value);
         c.setPath(path);
         c.setMaxAge(maxAge);
-        currentResponse.get().addCookie(c);
+        response.addCookie(c);
+        return c;
+    }
+    
+    protected Cookie addCookie(String name, String value, String path, int maxAge) {
+        return addCookie(currentResponse.get(), name, value, path, maxAge);
     }
 
     @Override
@@ -265,10 +271,13 @@ public abstract class CrudServlet<T, ID extends Serializable> extends HttpServle
         
     }
     
-    protected void writeResponse(HttpServletResponse response, int statusCode, Object entity) throws IOException {
+    public static void writeResponse(HttpServletResponse response, int statusCode, Object entity) throws IOException {
         response.setStatus(statusCode);
-        if (null != entity) {
-            response.setContentType(MIME_JSON);
+        if (HttpServletResponse.SC_MOVED_TEMPORARILY == statusCode && entity instanceof String) {
+            response.setHeader(LOCATION, (String) entity);
+        }
+        else if (null != entity) {
+            response.setContentType(MIME_JSON_UTF8);
             final PrintWriter writer = response.getWriter();
             MAPPER.writeValue(writer, entity);
             writer.flush();

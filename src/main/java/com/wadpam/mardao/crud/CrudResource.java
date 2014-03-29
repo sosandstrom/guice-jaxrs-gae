@@ -31,8 +31,9 @@ import net.sf.mardao.core.dao.Dao;
  * Date: 1/19/14 Time: 10:54 AM
  */
 @Consumes(value = {MediaType.APPLICATION_JSON})
-@Produces(MediaType.APPLICATION_JSON)
+@Produces(CrudResource.MIME_JSON_UTF8)
 public class CrudResource<T, ID extends Serializable, D extends Dao<T, ID>> {
+    public static final String MIME_JSON_UTF8 = "application/json; charset=UTF-8";
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(CrudResource.class);
 

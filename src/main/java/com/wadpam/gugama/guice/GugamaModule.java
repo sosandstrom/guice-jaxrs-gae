@@ -1,6 +1,6 @@
 package com.wadpam.gugama.guice;
 
-import com.google.appengine.repackaged.com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.Transactional;

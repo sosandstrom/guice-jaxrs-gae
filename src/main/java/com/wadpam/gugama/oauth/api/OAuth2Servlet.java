@@ -16,7 +16,6 @@ import com.wadpam.gugama.oauth.domain.DConnection;
 import com.wadpam.gugama.oauth.domain.DFactory;
 import com.wadpam.gugama.oauth.domain.DOAuth2User;
 import com.wadpam.gugama.oauth.web.OAuth2Filter;
-import com.wadpam.gugama.social.NetworkTemplate;
 import com.wadpam.gugama.social.SocialProfile;
 import com.wadpam.gugama.social.SocialTemplate;
 import java.io.IOException;
@@ -30,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.mardao.core.dao.DaoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -195,6 +195,8 @@ public class OAuth2Servlet extends HttpServlet {
             final ArrayList<Long> expiredTokens) {
         
         DOAuth2User user = null;
+        DaoImpl.setPrincipalName(profile.getDisplayName());
+ 
         
         // create connection?
         if (isNewConnection) {

@@ -75,7 +75,7 @@ public class OAuth2Filter implements Filter {
         request.setAttribute(NAME_USER_KEY, conn.getUserKey());
         Long userId = userDaoProvider.get().getSimpleKeyByPrimaryKey(conn.getUserKey());
         request.setAttribute(NAME_USER_ID, userId);
-        DaoImpl.setPrincipalName(null != userId ? userId.toString() : null);
+        DaoImpl.setPrincipalName(conn.getDisplayName());
         chain.doFilter(request, response);
     }
 

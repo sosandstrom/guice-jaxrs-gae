@@ -4,7 +4,9 @@
 
 package com.wadpam.mardao.social;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.Map;
 
 
@@ -13,21 +15,23 @@ import java.util.Map;
  * @author sosandstrom
  */
 public class SocialTemplate extends NetworkTemplate {
+    public static final String BASE_URL_FACEBOOK = "https://graph.facebook.com";
+    public static final String PROVIDER_ID_FACEBOOK = "facebook";
 
     protected final String access_token;
 
     public SocialTemplate(String access_token) {
-        this(access_token, "https://graph.facebook.com");
+        this(access_token, BASE_URL_FACEBOOK);
     }
 
     public SocialTemplate(String access_token, String baseUrl) {
         super(baseUrl);
         this.access_token = access_token;
     }
-    
+
     public static SocialTemplate create(String providerId, String access_token, 
             String baseUrl, String domain) {
-        if ("facebook".equals(providerId)) {
+        if (PROVIDER_ID_FACEBOOK.equals(providerId)) {
             return new SocialTemplate(access_token);
         }
 //        if ("itest".equals(providerId) && "itest".equals(domain)) {
@@ -73,5 +77,19 @@ public class SocialTemplate extends NetworkTemplate {
                 .username("username")
                 .profileUrl("link")
                 .build();
+    }
+
+    public Map.Entry<String,Integer> extend(String providerId, String clientId, String clientSecret,
+            String shortLivedToken) {
+        if (PROVIDER_ID_FACEBOOK.equals(providerId)) {
+            ImmutableMap<String, String> requestBody = ImmutableMap.of("client_id", clientId, 
+                    "client_secret", clientSecret, 
+                    "grant_type", "fb_exchange_token",
+                    "fb_exchange_token", shortLivedToken);
+            String accessExpires = get(getBaseUrl() + "/oauth/access_token", String.class, requestBody);
+            Map<String, String> map = parseQueryString(accessExpires);
+            return new AbstractMap.SimpleImmutableEntry<String,Integer>(map.get("access_token"), Integer.valueOf(map.get("expires")));
+        }
+        return null;
     }
 }

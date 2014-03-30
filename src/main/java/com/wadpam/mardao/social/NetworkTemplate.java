@@ -7,6 +7,7 @@ package com.wadpam.mardao.social;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -296,6 +298,23 @@ public class NetworkTemplate {
         return response.getHeader(LOCATION);
     }
     
+    public static Map<String,String> parseQueryString(String s) {
+        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        
+        for (String nameValue : s.split("&")) {
+            String pair[] = nameValue.split("=");
+            if (null != pair && 2 == pair.length) {
+                try {
+                    builder.put(pair[0], URLDecoder.decode(pair[1], "UTF-8"));
+                } catch (UnsupportedEncodingException ex) {
+                    LOG.warn("Decoding {}", pair[1]);
+                }
+            }
+        }
+        
+        return builder.build();
+    }
+
     // --- getters and setters ---
     
     public String getBaseUrl() {

@@ -15,14 +15,12 @@ public class DConnectionDaoBean
 	extends GeneratedDConnectionDaoImpl
 		implements DConnectionDao 
 {
-
     @Override
     public String getAccessToken(Object userKey, String providerId) {
         Filter providerIdFilter = createEqualsFilter(COLUMN_NAME_PROVIDERID, providerId);
         Iterable<DConnection> connections = queryIterable(false, 0, -1, userKey, null, COLUMN_NAME_EXPIRETIME, false, 
                                       null, false, providerIdFilter);
         for (DConnection recent : connections) {
-            // TODO: refresh
             return recent.getAccessToken();
         }
         return null;

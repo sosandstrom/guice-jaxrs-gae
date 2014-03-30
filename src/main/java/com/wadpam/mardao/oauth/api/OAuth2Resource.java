@@ -4,11 +4,14 @@
  */
 package com.wadpam.mardao.oauth.api;
 
+import com.google.appengine.api.utils.SystemProperty;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import com.wadpam.mardao.oauth.dao.DConnectionDao;
+import com.wadpam.mardao.oauth.dao.DFactoryDao;
 import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
 import com.wadpam.mardao.oauth.domain.DConnection;
+import com.wadpam.mardao.oauth.domain.DFactory;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
 import com.wadpam.mardao.oauth.web.OAuth2Filter;
 import com.wadpam.mardao.social.SocialProfile;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -42,12 +46,19 @@ public class OAuth2Resource {
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Resource.class);
     
     private final DConnectionDao connectionDao;
+    private final DFactoryDao factoryDao;
     private final DOAuth2UserDao userDao;
     
     @Inject
-    public OAuth2Resource(DConnectionDao connectionDao, DOAuth2UserDao userDao) {
+    public OAuth2Resource(DConnectionDao connectionDao, DFactoryDao factoryDao, 
+            DOAuth2UserDao userDao) {
         this.connectionDao = connectionDao;
         this.userDao = userDao;
+        this.factoryDao = factoryDao;
+        
+        if (SystemProperty.Environment.Value.Development == SystemProperty.environment.value()) {
+            factoryDao.persist(SocialTemplate.PROVIDER_ID_FACEBOOK, "https://graph.facebook.com", "255653361131262", "43801e00b5f2e540b672b19943e164ba");
+        }
     }
     
 //    @POST
@@ -136,6 +147,17 @@ public class OAuth2Resource {
         }
         // load connection from db async style (likely case is new token for existing user)
         final Iterable<DConnection> conns = connectionDao.queryByProviderUserId(providerUserId);
+        
+        // extend short-lived token
+        SocialTemplate extendTemplate = SocialTemplate.create(providerId, null, socialTemplate.getBaseUrl(), null);
+        DFactory client = factoryDao.findByPrimaryKey(providerId);
+        if (null != client) {
+            final Map.Entry<String,Integer> extended = extendTemplate.extend(providerId, client.getClientId(), client.getClientSecret(), access_token);
+            if (null != extended) {
+                access_token = extended.getKey();
+                expiresInSeconds = extended.getValue();
+            }
+        }
         
         // load existing conn for token
         DConnection conn = connectionDao.findByAccessToken(access_token);

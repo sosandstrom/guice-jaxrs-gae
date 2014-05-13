@@ -197,20 +197,13 @@ public class NetworkTemplate {
                     LOG.debug("Response JSON: {}", response.getBody());
                 }
                 else if (String.class.equals(responseClass)) {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte b[] = new byte[1024];
-                    int count;
-                    while (0 < (count = in.read(b))) {
-                        baos.write(b, 0, count);
-                    }
-                    String charset = "UTF-8";
-                    int beginIndex = responseType.lastIndexOf(MIME_CHARSET);
-                    if (0 < beginIndex) {
-                        charset = responseType.substring(beginIndex + MIME_CHARSET.length());
-                    }
-                    final String s = baos.toString(charset);
+                    String s = readResponseAsString(in, responseType);
                     LOG.info("Read {} bytes from {}", s.length(), con.getContentType());
                     response.setBody((J) s);
+                }
+                else if (400 <= response.getCode()) {
+                    String s = readResponseAsString(in, responseType);
+                    LOG.warn(s);
                 }
                 
                 in.close();
@@ -232,6 +225,22 @@ public class NetworkTemplate {
             }
             throw new RuntimeException(String.format("NetworkTemplate.exchange: %s", ioe.getMessage()), ioe);
         }
+    }
+
+    protected String readResponseAsString(InputStream in, final String contentType) throws IOException, UnsupportedEncodingException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte b[] = new byte[1024];
+        int count;
+        while (0 < (count = in.read(b))) {
+            baos.write(b, 0, count);
+        }
+        String charset = "UTF-8";
+        int beginIndex = contentType.lastIndexOf(MIME_CHARSET);
+        if (0 < beginIndex) {
+            charset = contentType.substring(beginIndex + MIME_CHARSET.length());
+        }
+        final String s = baos.toString(charset);
+        return s;
     }
     
     public static String expandUrl(final String url, Map<String, Object> paramMap) {
@@ -319,6 +328,10 @@ public class NetworkTemplate {
     
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public void setAccept(String accept) {
+        this.accept = accept;
     }
 
     public void setAuthorization(String authorization) {

@@ -85,7 +85,7 @@ public class OAuth2Filter implements Filter {
     private static String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter(NAME_ACCESS_TOKEN);
         // check for cookie:
-        if (null == accessToken) {
+        if (null == accessToken && null != request.getCookies()) {
             for (Cookie c : request.getCookies()) {
                 if (NAME_ACCESS_TOKEN.equals(c.getName())) {
                     return c.getValue();

@@ -17,6 +17,8 @@ import com.wadpam.mardao.oauth.web.OAuth2Filter;
 import com.wadpam.mardao.social.SocialProfile;
 import com.wadpam.mardao.social.SocialTemplate;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -25,6 +27,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -104,6 +107,30 @@ public class OAuth2Resource {
                 secret, Integer.parseInt(expiresInString), appArg0);
     }
     
+    @GET
+    @Path("{providerId}")
+    public Response registerFederatedGetPath(
+        @PathParam("providerId") String providerId,
+        @QueryParam("providerUserId") String providerUserId,
+        @QueryParam("access_token") String access_token,
+        @QueryParam("secret") String secret,
+        @QueryParam("expires_in") @DefaultValue("3600") String expiresInString,
+        @QueryParam("appArg0") String appArg0
+            ) {
+        return registerFederated(access_token, providerId, providerUserId, 
+                secret, Integer.parseInt(expiresInString), appArg0);
+    }
+
+    @GET
+    @Path("logout")
+    public Response logout() throws URISyntaxException {
+        NewCookie cookie = new NewCookie(OAuth2Filter.NAME_ACCESS_TOKEN, null, "/api", null, null, 0, false);
+        return Response
+                .temporaryRedirect(new URI("/"))
+                .cookie(cookie)
+                .build();
+        
+    }
     
     /**
      * 

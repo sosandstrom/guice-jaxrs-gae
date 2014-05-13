@@ -6,6 +6,7 @@ import com.google.inject.persist.PersistService;
 import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
 import com.wadpam.mardao.oauth.api.DConnectionResource;
+import com.wadpam.mardao.oauth.api.DFactoryResource;
 import com.wadpam.mardao.oauth.api.DOAuth2UserResource;
 import com.wadpam.mardao.oauth.api.OAuth2Resource;
 import com.wadpam.mardao.oauth.dao.DConnectionDao;
@@ -33,6 +34,7 @@ public class MardaoGuiceModule extends AbstractModule {
           bind(DFactoryDao.class).to(DFactoryDaoBean.class);
 
           bind(DConnectionResource.class);
+          bind(DFactoryResource.class);
           bind(DOAuth2UserResource.class);
           bind(OAuth2Resource.class);
           

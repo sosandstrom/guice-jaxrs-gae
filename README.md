@@ -1,9 +1,22 @@
 REST API
 ===============
 
-OAuth2Resource
----------------
+## OAuth2 Resource
 
-Path: /oauth/federated
 
-GET
+### GET /oauth/federated
+To register your access_token
+
+### GET/oauth/federated/{providerId}
+To register your access_token
+
+
+## User Resource
+
+### REST Path /api/oauth2user
+
+
+## Connection Resource
+
+### REST Path /api/connection
+

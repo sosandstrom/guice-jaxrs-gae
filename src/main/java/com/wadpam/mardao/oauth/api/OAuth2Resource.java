@@ -100,7 +100,7 @@ public class OAuth2Resource {
         @QueryParam("providerUserId") String providerUserId,
         @QueryParam("access_token") String access_token,
         @QueryParam("secret") String secret,
-        @QueryParam("expires_in") @DefaultValue("3600") String expiresInString,
+        @QueryParam("expires_in") @DefaultValue("4601") String expiresInString,
         @QueryParam("appArg0") String appArg0
             ) {
         return registerFederated(access_token, providerId, providerUserId, 
@@ -114,7 +114,7 @@ public class OAuth2Resource {
         @QueryParam("providerUserId") String providerUserId,
         @QueryParam("access_token") String access_token,
         @QueryParam("secret") String secret,
-        @QueryParam("expires_in") @DefaultValue("3600") String expiresInString,
+        @QueryParam("expires_in") @DefaultValue("4601") String expiresInString,
         @QueryParam("appArg0") String appArg0
             ) {
         return registerFederated(access_token, providerId, providerUserId, 
@@ -138,7 +138,7 @@ public class OAuth2Resource {
      * @param providerId
      * @param providerUserId
      * @param secret
-     * @param expires_in
+     * @param expiresInSeconds
      * @return the userId associated with the Connection, null if new Connection
      */
     protected Response registerFederated(
@@ -175,15 +175,17 @@ public class OAuth2Resource {
         // load connection from db async style (likely case is new token for existing user)
         final Iterable<DConnection> conns = connectionDao.queryByProviderUserId(providerUserId);
         
-        // extend short-lived token
-        SocialTemplate extendTemplate = SocialTemplate.create(providerId, null, socialTemplate.getBaseUrl(), null);
-        DFactory client = factoryDao.findByPrimaryKey(providerId);
-        if (null != client) {
-            final Map.Entry<String,Integer> extended = extendTemplate.extend(providerId, client.getClientId(), client.getClientSecret(), access_token);
+        // extend short-lived token?
+        if (expiresInSeconds < 4601) {
+          SocialTemplate extendTemplate = SocialTemplate.create(providerId, null, socialTemplate.getBaseUrl(), null);
+          DFactory client = factoryDao.findByPrimaryKey(providerId);
+          if (null != client) {
+            final Map.Entry<String, Integer> extended = extendTemplate.extend(providerId, client.getClientId(), client.getClientSecret(), access_token);
             if (null != extended) {
-                access_token = extended.getKey();
-                expiresInSeconds = extended.getValue();
+              access_token = extended.getKey();
+              expiresInSeconds = extended.getValue();
             }
+          }
         }
         
         // load existing conn for token
@@ -206,7 +208,8 @@ public class OAuth2Resource {
         }
         final boolean isNewUser = (null == userKey);
 
-        conn = createConnection(isNewConnection, isNewUser, profile, providerId, providerUserId, userKey, conn, access_token, secret, expiresInSeconds, appArg0, expiredTokens);
+        conn = createConnection(isNewConnection, isNewUser, profile, providerId, providerUserId,
+          userKey, conn, access_token, secret, expiresInSeconds, appArg0, expiredTokens);
 
         NewCookie cookie = new NewCookie(OAuth2Filter.NAME_ACCESS_TOKEN, conn.getAccessToken(), "/api", null, null, expiresInSeconds, false);
         return Response.status(isNewUser ? Status.CREATED : Status.OK)

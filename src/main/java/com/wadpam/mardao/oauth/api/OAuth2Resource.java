@@ -247,7 +247,7 @@ public class OAuth2Resource {
             // create user?
             if (isNewUser && autoCreateUser && null != userDao) {
                 user = userDao.persist(null, profile.getDisplayName(), profile.getEmail(), 
-                        profile.getProfileUrl(), null, null);
+                        profile.getProfileUrl(), null, profile.getThumbnailUrl());
                 userKey = userDao.getPrimaryKey(user);
             }
 
@@ -279,6 +279,10 @@ public class OAuth2Resource {
             if (null != user) {
                 Collection<String> userRoles = user.getRoles();
                 conn.setUserRoles(convertRoles(userRoles));
+
+              // update thumbnail Url
+              user.setThumbnailUrl(profile.getThumbnailUrl());
+              userDao.update(user);
             }
             LOGGER.debug("Roles set to {} from user {}", conn.getUserRoles(), user);
         }

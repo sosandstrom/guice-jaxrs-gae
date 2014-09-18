@@ -18,6 +18,7 @@ public class SocialProfile {
     private String id;
     private String username;
     private String profileUrl;
+    private String thumbnailUrl;
     
     private Map<String, Object> props = null;
     
@@ -70,6 +71,11 @@ public class SocialProfile {
     public SocialProfile profileUrl(String propertyName) {
         this.profileUrl = (String) props.get(propertyName);
         return this;
+    }
+
+    public SocialProfile thumbnailUrl(String propertyName) {
+      this.thumbnailUrl = (String) props.get(propertyName);
+      return this;
     }
     
     public String getDisplayName() {
@@ -131,4 +137,12 @@ public class SocialProfile {
     public void setProfileUrl(String profileUrl) {
         this.profileUrl = profileUrl;
     }
+
+  public String getThumbnailUrl() {
+    return thumbnailUrl;
+  }
+
+  public void setThumbnailUrl(String thumbnailUrl) {
+    this.thumbnailUrl = thumbnailUrl;
+  }
 }

@@ -69,14 +69,16 @@ public class SocialTemplate extends NetworkTemplate {
         if (!props.containsKey("id")) {
             throw new IllegalArgumentException("No id in profile");
         }
-        return SocialProfile.with(props)
-                .displayName("name")
-                .first("first_name")
-                .last("last_name")
-                .id("id")
-                .username("username")
-                .profileUrl("link")
-                .build();
+      SocialProfile profile = SocialProfile.with(props)
+        .displayName("name")
+        .first("first_name")
+        .last("last_name")
+        .id("id")
+        .username("username")
+        .profileUrl("link")
+        .build();
+      profile.setThumbnailUrl(getBaseUrl() + "/" + profile.getId() + "/picture");
+      return profile;
     }
 
     public Map.Entry<String,Integer> extend(String providerId, String clientId, String clientSecret,

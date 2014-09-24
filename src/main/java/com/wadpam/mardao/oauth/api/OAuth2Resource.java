@@ -279,6 +279,8 @@ public class OAuth2Resource {
             if (null != user) {
                 Collection<String> userRoles = user.getRoles();
                 conn.setUserRoles(convertRoles(userRoles));
+                conn.setImageUrl(profile.getThumbnailUrl());
+                conn.setProfileUrl(profile.getProfileUrl());
 
               // update thumbnail Url
               user.setThumbnailUrl(profile.getThumbnailUrl());

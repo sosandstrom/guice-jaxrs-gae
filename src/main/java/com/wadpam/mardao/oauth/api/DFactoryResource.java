@@ -8,7 +8,6 @@ package com.wadpam.mardao.oauth.api;
 
 import com.google.inject.Inject;
 import com.wadpam.mardao.crud.CrudResource;
-import com.wadpam.mardao.oauth.dao.DFactoryDao;
 import com.wadpam.mardao.oauth.domain.DFactory;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;

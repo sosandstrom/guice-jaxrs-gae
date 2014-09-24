@@ -1,5 +1,6 @@
 package com.wadpam.mardao.crud;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,17 +23,17 @@ import org.slf4j.LoggerFactory;
 import com.google.inject.persist.Transactional;
 
 import net.sf.mardao.core.CursorPage;
-import net.sf.mardao.core.dao.Dao;
+import net.sf.mardao.dao.AbstractDao;
 
 /**
- * Created with IntelliJ IDEA.
+ * Resource with CRUD operations backed by a Dao.
  *
  * @author osandstrom
  * Date: 1/19/14 Time: 10:54 AM
  */
 @Consumes(value = {MediaType.APPLICATION_JSON})
 @Produces(CrudResource.MIME_JSON_UTF8)
-public class CrudResource<T, ID extends Serializable, D extends Dao<T, ID>> {
+public class CrudResource<T, ID extends Serializable, D extends AbstractDao<T, ID>> {
     public static final String MIME_JSON_UTF8 = "application/json; charset=UTF-8";
 
   protected static final Logger LOGGER = LoggerFactory.getLogger(CrudResource.class);
@@ -51,27 +52,24 @@ public class CrudResource<T, ID extends Serializable, D extends Dao<T, ID>> {
 
   @POST
   @Transactional
-  public Response create(T entity) throws URISyntaxException {
-    final ID id = dao.persist(entity);
+  public Response create(T entity) throws URISyntaxException, IOException {
+    final ID id = dao.put(entity);
     URI uri = new URI(id.toString());
     return Response.created(uri).entity(id).build();
   }
 
   @DELETE
   @Path("{id}")
-  public Response delete(@PathParam("id") ID id) {
-    final boolean found = dao.delete(id);
+  public Response delete(@PathParam("id") ID id) throws IOException {
+    dao.delete(id);
 
-    if (!found) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
     return Response.noContent().build();
   }
 
   @GET
   @Path("{id}")
-  public Response read(@PathParam("id") ID id) {
-    final T entity = dao.findByPrimaryKey(id);
+  public Response read(@PathParam("id") ID id) throws IOException {
+    final T entity = dao.get(id);
 
     if (null == entity) {
       return Response.status(Response.Status.NOT_FOUND).build();
@@ -82,18 +80,15 @@ public class CrudResource<T, ID extends Serializable, D extends Dao<T, ID>> {
   @GET
   public Response readPage(@QueryParam("pageSize") @DefaultValue("10") int pageSize,
                            @QueryParam("cursorKey") String cursorKey) {
-    final CursorPage<T> page = dao.queryPage(pageSize, cursorKey);
-    return Response.ok(page).build();
+    //FIXME: final CursorPage<T> page = dao.queryPage(pageSize, cursorKey);
+    // return Response.ok(page).build();
+    return Response.status(Response.Status.CONFLICT).build();
   }
 
   @POST
   @Path("{id}")
-  public Response update(T entity) throws URISyntaxException {
-    final ID id = (ID) dao.getPrimaryKey(entity);
-    if (null == id) {
-      return Response.status(Response.Status.BAD_REQUEST).build();
-    }
-    dao.update(entity);
+  public Response update(T entity) throws URISyntaxException, IOException {
+    final ID id = dao.put(entity);
     URI uri = new URI(id.toString());
     return Response.ok().contentLocation(uri).build();
   }

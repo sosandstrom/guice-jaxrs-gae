@@ -7,8 +7,6 @@ package com.wadpam.mardao.oauth.web;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
-import com.wadpam.mardao.oauth.dao.DConnectionDao;
-import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
 import com.wadpam.mardao.oauth.domain.DConnection;
 import java.io.IOException;
 import java.util.Date;

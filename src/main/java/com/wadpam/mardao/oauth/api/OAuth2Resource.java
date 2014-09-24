@@ -7,9 +7,9 @@ package com.wadpam.mardao.oauth.api;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import com.wadpam.mardao.oauth.dao.DConnectionDao;
-import com.wadpam.mardao.oauth.dao.DFactoryDao;
-import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
+import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
+import com.wadpam.mardao.oauth.dao.DFactoryDaoBean;
+import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
 import com.wadpam.mardao.oauth.domain.DConnection;
 import com.wadpam.mardao.oauth.domain.DFactory;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
@@ -48,13 +48,13 @@ public class OAuth2Resource {
     private static final boolean autoCreateUser = true;
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Resource.class);
     
-    private final DConnectionDao connectionDao;
-    private final DFactoryDao factoryDao;
-    private final DOAuth2UserDao userDao;
+    private final DConnectionDaoBean connectionDao;
+    private final DFactoryDaoBean factoryDao;
+    private final DOAuth2UserDaoBean userDao;
     
     @Inject
-    public OAuth2Resource(DConnectionDao connectionDao, DFactoryDao factoryDao, 
-            DOAuth2UserDao userDao) {
+    public OAuth2Resource(DConnectionDaoBean connectionDao, DFactoryDaoBean factoryDao,
+            DOAuth2UserDaoBean userDao) {
         this.connectionDao = connectionDao;
         this.userDao = userDao;
         this.factoryDao = factoryDao;

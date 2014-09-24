@@ -6,7 +6,6 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.inject.Inject;
 import com.wadpam.mardao.crud.CrudResource;
-import com.wadpam.mardao.oauth.dao.DConnectionDao;
 import com.wadpam.mardao.oauth.domain.DConnection;
 
 

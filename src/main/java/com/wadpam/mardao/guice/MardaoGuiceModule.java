@@ -9,12 +9,7 @@ import com.wadpam.mardao.oauth.api.DConnectionResource;
 import com.wadpam.mardao.oauth.api.DFactoryResource;
 import com.wadpam.mardao.oauth.api.DOAuth2UserResource;
 import com.wadpam.mardao.oauth.api.OAuth2Resource;
-import com.wadpam.mardao.oauth.dao.DConnectionDao;
 import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
-import com.wadpam.mardao.oauth.dao.DFactoryDao;
-import com.wadpam.mardao.oauth.dao.DFactoryDaoBean;
-import com.wadpam.mardao.oauth.dao.DOAuth2UserDao;
-import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
 
 /**
  * Binds {@link UnitOfWork}, {@link PersistService} and {@link MardaoTransactionManager}.

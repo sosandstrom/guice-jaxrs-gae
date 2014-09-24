@@ -35,10 +35,12 @@ public class OAuth2Filter implements Filter {
     public static final String NAME_USER_ID = "oauth2user.id";
     public static final String NAME_USER_KEY = "oauth2user.key";
     public static final String NAME_CONNECTION = "oauth2connection";
-    
-    static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Filter.class);
+  public static final String HEADER_AUTHORIZATION = "Authorization";
 
-    private final Provider<DConnectionDao> connectionDaoProvider;
+  static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Filter.class);
+  public static final String PREFIX_OAUTH = "OAuth ";
+
+  private final Provider<DConnectionDao> connectionDaoProvider;
     private final Provider<DOAuth2UserDao> userDaoProvider;
 
     @Inject
@@ -84,6 +86,16 @@ public class OAuth2Filter implements Filter {
 
     private static String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter(NAME_ACCESS_TOKEN);
+
+        // check for header
+        if (null == accessToken && null != request.getHeader(HEADER_AUTHORIZATION)) {
+          String auth = request.getHeader(HEADER_AUTHORIZATION);
+          int beginIndex = auth.indexOf(PREFIX_OAUTH);
+          if (-1 < beginIndex) {
+            accessToken = auth.substring(beginIndex + PREFIX_OAUTH.length());
+          }
+        }
+
         // check for cookie:
         if (null == accessToken && null != request.getCookies()) {
             for (Cookie c : request.getCookies()) {

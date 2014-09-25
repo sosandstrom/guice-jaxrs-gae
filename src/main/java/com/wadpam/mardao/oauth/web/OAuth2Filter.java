@@ -90,6 +90,7 @@ public class OAuth2Filter implements Filter {
         // check for header
         if (null == accessToken && null != request.getHeader(HEADER_AUTHORIZATION)) {
           String auth = request.getHeader(HEADER_AUTHORIZATION);
+          LOGGER.debug("{}: {}", HEADER_AUTHORIZATION, auth);
           int beginIndex = auth.indexOf(PREFIX_OAUTH);
           if (-1 < beginIndex) {
             accessToken = auth.substring(beginIndex + PREFIX_OAUTH.length());

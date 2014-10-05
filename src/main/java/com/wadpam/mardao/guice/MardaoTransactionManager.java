@@ -1,5 +1,6 @@
 package com.wadpam.mardao.guice;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import org.aopalliance.intercept.MethodInterceptor;
@@ -7,10 +8,13 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.appengine.api.datastore.Transaction;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 
-import net.sf.mardao.core.dao.TypeDaoImpl;
+import net.sf.mardao.dao.AbstractDao;
+import net.sf.mardao.dao.Supplier;
+import net.sf.mardao.dao.TransFunc;
 
 /**
  * Created with IntelliJ IDEA.
@@ -19,6 +23,13 @@ import net.sf.mardao.core.dao.TypeDaoImpl;
  */
 public class MardaoTransactionManager implements MethodInterceptor {
   static final Logger LOGGER = LoggerFactory.getLogger(MardaoTransactionManager.class);
+
+  private final Provider<Supplier> supplier;
+
+  @Inject
+  public MardaoTransactionManager(Provider<Supplier> supplier) {
+    this.supplier = supplier;
+  }
 
   /**
    * Implement this method to perform extra treatments before and after the invocation. Polite implementations would certainly like
@@ -30,7 +41,7 @@ public class MardaoTransactionManager implements MethodInterceptor {
    * @throws Throwable if the interceptors or the target-object throws an exception.
    */
   @Override
-  public Object invoke(MethodInvocation invocation) throws Throwable {
+  public Object invoke(final MethodInvocation invocation) throws Throwable {
     final Method method = invocation.getMethod();
     final Transactional annotation = method.getAnnotation(Transactional.class);
 
@@ -39,16 +50,16 @@ public class MardaoTransactionManager implements MethodInterceptor {
       result = invocation.proceed();
     }
     else {
-      LOGGER.info("--- beginTransaction for {}()", method.getName());
-      final Transaction tx = TypeDaoImpl.beginTransactionImpl();
-      try {
-        result = invocation.proceed();
-        TypeDaoImpl.commitTransactionImpl(tx);
-        LOGGER.info("=== committedTransaction for {}()", method.getName());
-      }
-      finally {
-        TypeDaoImpl.rollbackActiveTransactionImpl(tx);
-      }
+      result = AbstractDao.withTransaction(new TransFunc<Object>() {
+        @Override
+        public Object apply() throws IOException {
+          try {
+            return invocation.proceed();
+          } catch (Throwable throwable) {
+            throw new IOException("withTransaction invocation.proceed()", throwable);
+          }
+        }
+      }, true, supplier.get());
     }
 
     return result;

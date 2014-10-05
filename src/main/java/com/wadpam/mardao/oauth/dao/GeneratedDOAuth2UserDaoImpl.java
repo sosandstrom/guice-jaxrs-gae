@@ -20,7 +20,7 @@ import com.wadpam.mardao.oauth.domain.DOAuth2User;
 /**
  * The DOAuth2User domain-object specific finders and methods go in this POJO.
  * 
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class GeneratedDOAuth2UserDaoImpl
@@ -37,7 +37,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified createdBy
    */
   public Iterable<DOAuth2User> queryByCreatedBy(java.lang.String createdBy) {
-    return queryByField(DOAuth2UserMapper.Field.CREATEDBY.getFieldName(), createdBy);
+    return queryByField(null, DOAuth2UserMapper.Field.CREATEDBY.getFieldName(), createdBy);
   }
 
   /**
@@ -46,7 +46,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified createdDate
    */
   public Iterable<DOAuth2User> queryByCreatedDate(java.util.Date createdDate) {
-    return queryByField(DOAuth2UserMapper.Field.CREATEDDATE.getFieldName(), createdDate);
+    return queryByField(null, DOAuth2UserMapper.Field.CREATEDDATE.getFieldName(), createdDate);
   }
 
   /**
@@ -55,7 +55,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified displayName
    */
   public Iterable<DOAuth2User> queryByDisplayName(java.lang.String displayName) {
-    return queryByField(DOAuth2UserMapper.Field.DISPLAYNAME.getFieldName(), displayName);
+    return queryByField(null, DOAuth2UserMapper.Field.DISPLAYNAME.getFieldName(), displayName);
   }
 
   /**
@@ -64,7 +64,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified email
    */
   public Iterable<DOAuth2User> queryByEmail(java.lang.String email) {
-    return queryByField(DOAuth2UserMapper.Field.EMAIL.getFieldName(), email);
+    return queryByField(null, DOAuth2UserMapper.Field.EMAIL.getFieldName(), email);
   }
 
   /**
@@ -73,7 +73,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified profileLink
    */
   public Iterable<DOAuth2User> queryByProfileLink(java.lang.String profileLink) {
-    return queryByField(DOAuth2UserMapper.Field.PROFILELINK.getFieldName(), profileLink);
+    return queryByField(null, DOAuth2UserMapper.Field.PROFILELINK.getFieldName(), profileLink);
   }
 
   /**
@@ -82,7 +82,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified roles
    */
   public Iterable<DOAuth2User> queryByRoles(java.lang.Object roles) {
-    return queryByField(DOAuth2UserMapper.Field.ROLES.getFieldName(), roles);
+    return queryByField(null, DOAuth2UserMapper.Field.ROLES.getFieldName(), roles);
   }
 
   /**
@@ -91,7 +91,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified thumbnailUrl
    */
   public Iterable<DOAuth2User> queryByThumbnailUrl(java.lang.String thumbnailUrl) {
-    return queryByField(DOAuth2UserMapper.Field.THUMBNAILURL.getFieldName(), thumbnailUrl);
+    return queryByField(null, DOAuth2UserMapper.Field.THUMBNAILURL.getFieldName(), thumbnailUrl);
   }
 
   /**
@@ -100,7 +100,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified updatedBy
    */
   public Iterable<DOAuth2User> queryByUpdatedBy(java.lang.String updatedBy) {
-    return queryByField(DOAuth2UserMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
+    return queryByField(null, DOAuth2UserMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
   }
 
   /**
@@ -109,7 +109,7 @@ public class GeneratedDOAuth2UserDaoImpl
    * @return an Iterable of DOAuth2Users for the specified updatedDate
    */
   public Iterable<DOAuth2User> queryByUpdatedDate(java.util.Date updatedDate) {
-    return queryByField(DOAuth2UserMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
+    return queryByField(null, DOAuth2UserMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
   }
 
 }

@@ -6,8 +6,11 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.inject.Inject;
 import com.wadpam.mardao.crud.CrudResource;
+import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
 import com.wadpam.mardao.oauth.web.OAuth2Filter;
+
+import java.io.IOException;
 import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -23,27 +26,27 @@ import javax.ws.rs.core.Response;
  */
 @Path("api/oauth2user")
 @Produces(MediaType.APPLICATION_JSON)
-public class DOAuth2UserResource extends CrudResource<DOAuth2User, Long, DOAuth2UserDao> {
+public class DOAuth2UserResource extends CrudResource<DOAuth2User, Long, DOAuth2UserDaoBean> {
 
   @Inject  
   private HttpServletRequest request;  
     
   @Inject
-  public DOAuth2UserResource(DOAuth2UserDao dao) {
+  public DOAuth2UserResource(DOAuth2UserDaoBean dao) {
     super(dao);
     LOGGER.debug("<init>");
   }
 
     @GET
     @Path("me")
-    public Response readMe() {
+    public Response readMe() throws IOException {
         Long id = (Long) request.getAttribute(OAuth2Filter.NAME_USER_ID);
         return read(id);
     }
 
     @POST
     @Path("me")
-    public Response updateMe(DOAuth2User entity) throws URISyntaxException {
+    public Response updateMe(DOAuth2User entity) throws URISyntaxException, IOException {
         Long id = (Long) request.getAttribute(OAuth2Filter.NAME_USER_ID);
         if (null == entity.getId()) {
             entity.setId(id);

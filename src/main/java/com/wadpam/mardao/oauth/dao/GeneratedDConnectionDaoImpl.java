@@ -20,7 +20,7 @@ import com.wadpam.mardao.oauth.domain.DConnection;
 /**
  * The DConnection domain-object specific finders and methods go in this POJO.
  * 
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class GeneratedDConnectionDaoImpl
@@ -36,8 +36,8 @@ public class GeneratedDConnectionDaoImpl
    * @param accessToken the unique attribute
    * @return the unique DConnection for the specified accessToken
    */
-  public DConnection findByAccessToken(java.lang.String accessToken) {
-    return queryUniqueByField(DConnectionMapper.Field.ACCESSTOKEN.getFieldName(), accessToken);
+  public DConnection findByAccessToken(Object userKeyKey, java.lang.String accessToken) {
+    return queryUniqueByField(userKeyKey, DConnectionMapper.Field.ACCESSTOKEN.getFieldName(), accessToken);
   }
 
   /**
@@ -45,8 +45,8 @@ public class GeneratedDConnectionDaoImpl
    * @param appArg0 the specified attribute
    * @return an Iterable of DConnections for the specified appArg0
    */
-  public Iterable<DConnection> queryByAppArg0(java.lang.String appArg0) {
-    return queryByField(DConnectionMapper.Field.APPARG0.getFieldName(), appArg0);
+  public Iterable<DConnection> queryByAppArg0(Object userKeyKey, java.lang.String appArg0) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.APPARG0.getFieldName(), appArg0);
   }
 
   /**
@@ -54,8 +54,8 @@ public class GeneratedDConnectionDaoImpl
    * @param createdBy the specified attribute
    * @return an Iterable of DConnections for the specified createdBy
    */
-  public Iterable<DConnection> queryByCreatedBy(java.lang.String createdBy) {
-    return queryByField(DConnectionMapper.Field.CREATEDBY.getFieldName(), createdBy);
+  public Iterable<DConnection> queryByCreatedBy(Object userKeyKey, java.lang.String createdBy) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.CREATEDBY.getFieldName(), createdBy);
   }
 
   /**
@@ -63,8 +63,8 @@ public class GeneratedDConnectionDaoImpl
    * @param createdDate the specified attribute
    * @return an Iterable of DConnections for the specified createdDate
    */
-  public Iterable<DConnection> queryByCreatedDate(java.util.Date createdDate) {
-    return queryByField(DConnectionMapper.Field.CREATEDDATE.getFieldName(), createdDate);
+  public Iterable<DConnection> queryByCreatedDate(Object userKeyKey, java.util.Date createdDate) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.CREATEDDATE.getFieldName(), createdDate);
   }
 
   /**
@@ -72,8 +72,8 @@ public class GeneratedDConnectionDaoImpl
    * @param displayName the specified attribute
    * @return an Iterable of DConnections for the specified displayName
    */
-  public Iterable<DConnection> queryByDisplayName(java.lang.String displayName) {
-    return queryByField(DConnectionMapper.Field.DISPLAYNAME.getFieldName(), displayName);
+  public Iterable<DConnection> queryByDisplayName(Object userKeyKey, java.lang.String displayName) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.DISPLAYNAME.getFieldName(), displayName);
   }
 
   /**
@@ -81,8 +81,8 @@ public class GeneratedDConnectionDaoImpl
    * @param expireTime the specified attribute
    * @return an Iterable of DConnections for the specified expireTime
    */
-  public Iterable<DConnection> queryByExpireTime(java.util.Date expireTime) {
-    return queryByField(DConnectionMapper.Field.EXPIRETIME.getFieldName(), expireTime);
+  public Iterable<DConnection> queryByExpireTime(Object userKeyKey, java.util.Date expireTime) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.EXPIRETIME.getFieldName(), expireTime);
   }
 
   /**
@@ -90,8 +90,8 @@ public class GeneratedDConnectionDaoImpl
    * @param imageUrl the specified attribute
    * @return an Iterable of DConnections for the specified imageUrl
    */
-  public Iterable<DConnection> queryByImageUrl(java.lang.String imageUrl) {
-    return queryByField(DConnectionMapper.Field.IMAGEURL.getFieldName(), imageUrl);
+  public Iterable<DConnection> queryByImageUrl(Object userKeyKey, java.lang.String imageUrl) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.IMAGEURL.getFieldName(), imageUrl);
   }
 
   /**
@@ -99,8 +99,8 @@ public class GeneratedDConnectionDaoImpl
    * @param profileUrl the specified attribute
    * @return an Iterable of DConnections for the specified profileUrl
    */
-  public Iterable<DConnection> queryByProfileUrl(java.lang.String profileUrl) {
-    return queryByField(DConnectionMapper.Field.PROFILEURL.getFieldName(), profileUrl);
+  public Iterable<DConnection> queryByProfileUrl(Object userKeyKey, java.lang.String profileUrl) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.PROFILEURL.getFieldName(), profileUrl);
   }
 
   /**
@@ -108,8 +108,8 @@ public class GeneratedDConnectionDaoImpl
    * @param providerId the specified attribute
    * @return an Iterable of DConnections for the specified providerId
    */
-  public Iterable<DConnection> queryByProviderId(java.lang.String providerId) {
-    return queryByField(DConnectionMapper.Field.PROVIDERID.getFieldName(), providerId);
+  public Iterable<DConnection> queryByProviderId(Object userKeyKey, java.lang.String providerId) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.PROVIDERID.getFieldName(), providerId);
   }
 
   /**
@@ -117,8 +117,8 @@ public class GeneratedDConnectionDaoImpl
    * @param providerUserId the specified attribute
    * @return an Iterable of DConnections for the specified providerUserId
    */
-  public Iterable<DConnection> queryByProviderUserId(java.lang.String providerUserId) {
-    return queryByField(DConnectionMapper.Field.PROVIDERUSERID.getFieldName(), providerUserId);
+  public Iterable<DConnection> queryByProviderUserId(Object userKeyKey, java.lang.String providerUserId) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.PROVIDERUSERID.getFieldName(), providerUserId);
   }
 
   /**
@@ -126,8 +126,8 @@ public class GeneratedDConnectionDaoImpl
    * @param refreshToken the unique attribute
    * @return the unique DConnection for the specified refreshToken
    */
-  public DConnection findByRefreshToken(java.lang.String refreshToken) {
-    return queryUniqueByField(DConnectionMapper.Field.REFRESHTOKEN.getFieldName(), refreshToken);
+  public DConnection findByRefreshToken(Object userKeyKey, java.lang.String refreshToken) {
+    return queryUniqueByField(userKeyKey, DConnectionMapper.Field.REFRESHTOKEN.getFieldName(), refreshToken);
   }
 
   /**
@@ -135,8 +135,8 @@ public class GeneratedDConnectionDaoImpl
    * @param secret the specified attribute
    * @return an Iterable of DConnections for the specified secret
    */
-  public Iterable<DConnection> queryBySecret(java.lang.String secret) {
-    return queryByField(DConnectionMapper.Field.SECRET.getFieldName(), secret);
+  public Iterable<DConnection> queryBySecret(Object userKeyKey, java.lang.String secret) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.SECRET.getFieldName(), secret);
   }
 
   /**
@@ -144,8 +144,8 @@ public class GeneratedDConnectionDaoImpl
    * @param updatedBy the specified attribute
    * @return an Iterable of DConnections for the specified updatedBy
    */
-  public Iterable<DConnection> queryByUpdatedBy(java.lang.String updatedBy) {
-    return queryByField(DConnectionMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
+  public Iterable<DConnection> queryByUpdatedBy(Object userKeyKey, java.lang.String updatedBy) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
   }
 
   /**
@@ -153,8 +153,8 @@ public class GeneratedDConnectionDaoImpl
    * @param updatedDate the specified attribute
    * @return an Iterable of DConnections for the specified updatedDate
    */
-  public Iterable<DConnection> queryByUpdatedDate(java.util.Date updatedDate) {
-    return queryByField(DConnectionMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
+  public Iterable<DConnection> queryByUpdatedDate(Object userKeyKey, java.util.Date updatedDate) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
   }
 
   /**
@@ -162,8 +162,8 @@ public class GeneratedDConnectionDaoImpl
    * @param userRoles the specified attribute
    * @return an Iterable of DConnections for the specified userRoles
    */
-  public Iterable<DConnection> queryByUserRoles(java.lang.String userRoles) {
-    return queryByField(DConnectionMapper.Field.USERROLES.getFieldName(), userRoles);
+  public Iterable<DConnection> queryByUserRoles(Object userKeyKey, java.lang.String userRoles) {
+    return queryByField(userKeyKey, DConnectionMapper.Field.USERROLES.getFieldName(), userRoles);
   }
 
 }

@@ -1,13 +1,17 @@
 package com.wadpam.mardao.oauth.dao;
 
+import java.util.Collection;
+import java.util.Date;
+
 import net.sf.mardao.dao.Mapper;
 import net.sf.mardao.dao.Supplier;
+import net.sf.mardao.domain.AbstractEntityBuilder;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
 
 /**
  * The DOAuth2User domain-object specific mapping methods go here.
  *
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class DOAuth2UserMapper
@@ -68,24 +72,55 @@ public class DOAuth2UserMapper
   }
 
   @Override
+  public String getCreatedByColumnName() {
+    return Field.CREATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getCreatedDateColumnName() {
+    return Field.CREATEDDATE.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedByColumnName() {
+    return Field.UPDATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedDateColumnName() {
+    return Field.UPDATEDDATE.getFieldName();
+  }
+
+  @Override
   public Long getId(DOAuth2User entity) {
     return entity != null ? entity.getId() : null;
   }
 
   @Override
+  public Object getParentKey(DOAuth2User entity) {
+    return null;
+  }
+
+  @Override
+  public void setParentKey(DOAuth2User entity, Object parentKey) {
+    // this entity has no parent
+}
+
+@Override
   public String getKind() {
     return Long.class.getSimpleName();
   }
 
   @Override
-  public Object toKey(Long id) {
-    return supplier.toKey(Long.class.getSimpleName(), id);
+  public Object toKey(Object parentKey, Long id) {
+    return supplier.toKey(parentKey, Long.class.getSimpleName(), id);
   }
 
   @Override
   public Object toWriteValue(DOAuth2User entity) {
     final Long id = getId(entity);
-    final Object key = toKey(id);
+    final Object parentKey = getParentKey(entity);
+    final Object key = toKey(parentKey, id);
     final Object value = supplier.createWriteValue(key);
 
     // set the primary key:
@@ -104,4 +139,57 @@ public class DOAuth2UserMapper
     return value;
   }
 
+  public static DOAuth2UserBuilder newBuilder() {
+    return new DOAuth2UserBuilder();
+  }
+
+  public static class DOAuth2UserBuilder extends AbstractEntityBuilder<DOAuth2User> {
+
+    @Override
+    protected DOAuth2User newInstance() {
+      return new DOAuth2User();
+    }
+
+    public DOAuth2UserBuilder id(Long id) {
+      entity.setId(id);
+      return this;
+    }
+
+    public DOAuth2UserBuilder createdBy(String createdBy) {
+      entity.setCreatedBy(createdBy);
+      return this;
+    }
+    public DOAuth2UserBuilder createdDate(Date createdDate) {
+      entity.setCreatedDate(createdDate);
+      return this;
+    }
+    public DOAuth2UserBuilder displayName(String displayName) {
+      entity.setDisplayName(displayName);
+      return this;
+    }
+    public DOAuth2UserBuilder email(String email) {
+      entity.setEmail(email);
+      return this;
+    }
+    public DOAuth2UserBuilder profileLink(String profileLink) {
+      entity.setProfileLink(profileLink);
+      return this;
+    }
+    public DOAuth2UserBuilder roles(Collection roles) {
+      entity.setRoles(roles);
+      return this;
+    }
+    public DOAuth2UserBuilder thumbnailUrl(String thumbnailUrl) {
+      entity.setThumbnailUrl(thumbnailUrl);
+      return this;
+    }
+    public DOAuth2UserBuilder updatedBy(String updatedBy) {
+      entity.setUpdatedBy(updatedBy);
+      return this;
+    }
+    public DOAuth2UserBuilder updatedDate(Date updatedDate) {
+      entity.setUpdatedDate(updatedDate);
+      return this;
+    }
+  }
 }

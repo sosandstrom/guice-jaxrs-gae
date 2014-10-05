@@ -1,13 +1,17 @@
 package com.wadpam.mardao.oauth.dao;
 
+import java.util.Collection;
+import java.util.Date;
+
 import net.sf.mardao.dao.Mapper;
 import net.sf.mardao.dao.Supplier;
+import net.sf.mardao.domain.AbstractEntityBuilder;
 import com.wadpam.mardao.oauth.domain.DConnection;
 
 /**
  * The DConnection domain-object specific mapping methods go here.
  *
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class DConnectionMapper
@@ -80,24 +84,55 @@ public class DConnectionMapper
   }
 
   @Override
+  public String getCreatedByColumnName() {
+    return Field.CREATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getCreatedDateColumnName() {
+    return Field.CREATEDDATE.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedByColumnName() {
+    return Field.UPDATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedDateColumnName() {
+    return Field.UPDATEDDATE.getFieldName();
+  }
+
+  @Override
   public Long getId(DConnection entity) {
     return entity != null ? entity.getId() : null;
   }
 
   @Override
+  public Object getParentKey(DConnection entity) {
+    return null != entity ? entity.getUserKey() : null;
+  }
+
+  @Override
+  public void setParentKey(DConnection entity, Object parentKey) {
+    entity.setUserKey(parentKey);
+}
+
+@Override
   public String getKind() {
     return Long.class.getSimpleName();
   }
 
   @Override
-  public Object toKey(Long id) {
-    return supplier.toKey(Long.class.getSimpleName(), id);
+  public Object toKey(Object parentKey, Long id) {
+    return supplier.toKey(parentKey, Long.class.getSimpleName(), id);
   }
 
   @Override
   public Object toWriteValue(DConnection entity) {
     final Long id = getId(entity);
-    final Object key = toKey(id);
+    final Object parentKey = getParentKey(entity);
+    final Object key = toKey(parentKey, id);
     final Object value = supplier.createWriteValue(key);
 
     // set the primary key:
@@ -122,4 +157,81 @@ public class DConnectionMapper
     return value;
   }
 
+  public static DConnectionBuilder newBuilder() {
+    return new DConnectionBuilder();
+  }
+
+  public static class DConnectionBuilder extends AbstractEntityBuilder<DConnection> {
+
+    @Override
+    protected DConnection newInstance() {
+      return new DConnection();
+    }
+
+    public DConnectionBuilder id(Long id) {
+      entity.setId(id);
+      return this;
+    }
+
+    public DConnectionBuilder accessToken(String accessToken) {
+      entity.setAccessToken(accessToken);
+      return this;
+    }
+    public DConnectionBuilder appArg0(String appArg0) {
+      entity.setAppArg0(appArg0);
+      return this;
+    }
+    public DConnectionBuilder createdBy(String createdBy) {
+      entity.setCreatedBy(createdBy);
+      return this;
+    }
+    public DConnectionBuilder createdDate(Date createdDate) {
+      entity.setCreatedDate(createdDate);
+      return this;
+    }
+    public DConnectionBuilder displayName(String displayName) {
+      entity.setDisplayName(displayName);
+      return this;
+    }
+    public DConnectionBuilder expireTime(Date expireTime) {
+      entity.setExpireTime(expireTime);
+      return this;
+    }
+    public DConnectionBuilder imageUrl(String imageUrl) {
+      entity.setImageUrl(imageUrl);
+      return this;
+    }
+    public DConnectionBuilder profileUrl(String profileUrl) {
+      entity.setProfileUrl(profileUrl);
+      return this;
+    }
+    public DConnectionBuilder providerId(String providerId) {
+      entity.setProviderId(providerId);
+      return this;
+    }
+    public DConnectionBuilder providerUserId(String providerUserId) {
+      entity.setProviderUserId(providerUserId);
+      return this;
+    }
+    public DConnectionBuilder refreshToken(String refreshToken) {
+      entity.setRefreshToken(refreshToken);
+      return this;
+    }
+    public DConnectionBuilder secret(String secret) {
+      entity.setSecret(secret);
+      return this;
+    }
+    public DConnectionBuilder updatedBy(String updatedBy) {
+      entity.setUpdatedBy(updatedBy);
+      return this;
+    }
+    public DConnectionBuilder updatedDate(Date updatedDate) {
+      entity.setUpdatedDate(updatedDate);
+      return this;
+    }
+    public DConnectionBuilder userRoles(String userRoles) {
+      entity.setUserRoles(userRoles);
+      return this;
+    }
+  }
 }

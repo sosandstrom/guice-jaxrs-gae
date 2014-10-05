@@ -1,13 +1,17 @@
 package com.wadpam.mardao.oauth.dao;
 
+import java.util.Collection;
+import java.util.Date;
+
 import net.sf.mardao.dao.Mapper;
 import net.sf.mardao.dao.Supplier;
+import net.sf.mardao.domain.AbstractEntityBuilder;
 import com.wadpam.mardao.oauth.domain.DFactory;
 
 /**
  * The DFactory domain-object specific mapping methods go here.
  *
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class DFactoryMapper
@@ -64,24 +68,55 @@ public class DFactoryMapper
   }
 
   @Override
+  public String getCreatedByColumnName() {
+    return Field.CREATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getCreatedDateColumnName() {
+    return Field.CREATEDDATE.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedByColumnName() {
+    return Field.UPDATEDBY.getFieldName();
+  }
+
+  @Override
+  public String getUpdatedDateColumnName() {
+    return Field.UPDATEDDATE.getFieldName();
+  }
+
+  @Override
   public String getId(DFactory entity) {
     return entity != null ? entity.getId() : null;
   }
 
   @Override
+  public Object getParentKey(DFactory entity) {
+    return null;
+  }
+
+  @Override
+  public void setParentKey(DFactory entity, Object parentKey) {
+    // this entity has no parent
+}
+
+@Override
   public String getKind() {
     return String.class.getSimpleName();
   }
 
   @Override
-  public Object toKey(String id) {
-    return supplier.toKey(String.class.getSimpleName(), id);
+  public Object toKey(Object parentKey, String id) {
+    return supplier.toKey(parentKey, String.class.getSimpleName(), id);
   }
 
   @Override
   public Object toWriteValue(DFactory entity) {
     final String id = getId(entity);
-    final Object key = toKey(id);
+    final Object parentKey = getParentKey(entity);
+    final Object key = toKey(parentKey, id);
     final Object value = supplier.createWriteValue(key);
 
     // set the primary key:
@@ -98,4 +133,49 @@ public class DFactoryMapper
     return value;
   }
 
+  public static DFactoryBuilder newBuilder() {
+    return new DFactoryBuilder();
+  }
+
+  public static class DFactoryBuilder extends AbstractEntityBuilder<DFactory> {
+
+    @Override
+    protected DFactory newInstance() {
+      return new DFactory();
+    }
+
+    public DFactoryBuilder id(String id) {
+      entity.setId(id);
+      return this;
+    }
+
+    public DFactoryBuilder baseUrl(String baseUrl) {
+      entity.setBaseUrl(baseUrl);
+      return this;
+    }
+    public DFactoryBuilder clientId(String clientId) {
+      entity.setClientId(clientId);
+      return this;
+    }
+    public DFactoryBuilder clientSecret(String clientSecret) {
+      entity.setClientSecret(clientSecret);
+      return this;
+    }
+    public DFactoryBuilder createdBy(String createdBy) {
+      entity.setCreatedBy(createdBy);
+      return this;
+    }
+    public DFactoryBuilder createdDate(Date createdDate) {
+      entity.setCreatedDate(createdDate);
+      return this;
+    }
+    public DFactoryBuilder updatedBy(String updatedBy) {
+      entity.setUpdatedBy(updatedBy);
+      return this;
+    }
+    public DFactoryBuilder updatedDate(Date updatedDate) {
+      entity.setUpdatedDate(updatedDate);
+      return this;
+    }
+  }
 }

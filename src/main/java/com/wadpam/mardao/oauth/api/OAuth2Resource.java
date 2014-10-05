@@ -9,7 +9,9 @@ import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
 import com.wadpam.mardao.oauth.dao.DFactoryDaoBean;
+import com.wadpam.mardao.oauth.dao.DFactoryMapper;
 import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
+import com.wadpam.mardao.oauth.dao.DOAuth2UserMapper;
 import com.wadpam.mardao.oauth.domain.DConnection;
 import com.wadpam.mardao.oauth.domain.DFactory;
 import com.wadpam.mardao.oauth.domain.DOAuth2User;
@@ -60,7 +62,16 @@ public class OAuth2Resource {
         this.factoryDao = factoryDao;
         
         if (SystemProperty.Environment.Value.Development == SystemProperty.environment.value()) {
-            factoryDao.persist(SocialTemplate.PROVIDER_ID_FACEBOOK, "https://graph.facebook.com", "255653361131262", "43801e00b5f2e540b672b19943e164ba");
+          try {
+            factoryDao.put(DFactoryMapper.newBuilder()
+              .id(SocialTemplate.PROVIDER_ID_FACEBOOK)
+              .baseUrl("https://graph.facebook.com")
+              .clientId("255653361131262")
+              .clientSecret("43801e00b5f2e540b672b19943e164ba")
+              .build());
+          } catch (IOException e) {
+            LOGGER.error("populating factory", e);
+          }
         }
     }
     
@@ -102,7 +113,7 @@ public class OAuth2Resource {
         @QueryParam("secret") String secret,
         @QueryParam("expires_in") @DefaultValue("4601") String expiresInString,
         @QueryParam("appArg0") String appArg0
-            ) {
+            ) throws IOException {
         return registerFederated(access_token, providerId, providerUserId, 
                 secret, Integer.parseInt(expiresInString), appArg0);
     }
@@ -116,7 +127,7 @@ public class OAuth2Resource {
         @QueryParam("secret") String secret,
         @QueryParam("expires_in") @DefaultValue("4601") String expiresInString,
         @QueryParam("appArg0") String appArg0
-            ) {
+            ) throws IOException {
         return registerFederated(access_token, providerId, providerUserId, 
                 secret, Integer.parseInt(expiresInString), appArg0);
     }
@@ -147,7 +158,7 @@ public class OAuth2Resource {
             String providerUserId,
             String secret,
             Integer expiresInSeconds,
-            String appArg0) {
+            String appArg0) throws IOException {
         
         // use the connectionFactory
         final SocialTemplate socialTemplate = SocialTemplate.create(
@@ -173,12 +184,12 @@ public class OAuth2Resource {
             throw new IllegalArgumentException("Unauthorized federated side mismatch");
         }
         // load connection from db async style (likely case is new token for existing user)
-        final Iterable<DConnection> conns = connectionDao.queryByProviderUserId(providerUserId);
+        final Iterable<DConnection> conns = connectionDao.queryByProviderUserId(null, providerUserId);
         
         // extend short-lived token?
         if (expiresInSeconds < 4601) {
           SocialTemplate extendTemplate = SocialTemplate.create(providerId, null, socialTemplate.getBaseUrl(), null);
-          DFactory client = factoryDao.findByPrimaryKey(providerId);
+          DFactory client = factoryDao.get(providerId);
           if (null != client) {
             final Map.Entry<String, Integer> extended = extendTemplate.extend(providerId, client.getClientId(), client.getClientSecret(), access_token);
             if (null != extended) {
@@ -189,7 +200,7 @@ public class OAuth2Resource {
         }
         
         // load existing conn for token
-        DConnection conn = connectionDao.findByAccessToken(access_token);
+        DConnection conn = connectionDao.findByAccessToken(null, access_token);
         final boolean isNewConnection = (null == conn);
         Object userKey = null;
 
@@ -237,7 +248,7 @@ public class OAuth2Resource {
     protected DConnection createConnection(final boolean isNewConnection, final boolean isNewUser, SocialProfile profile, 
             String providerId, String providerUserId, Object userKey, DConnection conn, 
             String access_token, String secret, Integer expiresInSeconds, String appArg0, 
-            final ArrayList<Long> expiredTokens) {
+            final ArrayList<Long> expiredTokens) throws IOException {
         
         DOAuth2User user = null;
         
@@ -246,9 +257,14 @@ public class OAuth2Resource {
 
             // create user?
             if (isNewUser && autoCreateUser && null != userDao) {
-                user = userDao.persist(null, profile.getDisplayName(), profile.getEmail(), 
-                        profile.getProfileUrl(), null, profile.getThumbnailUrl());
-                userKey = userDao.getPrimaryKey(user);
+                user = DOAuth2UserMapper.newBuilder()
+                  .displayName(profile.getDisplayName())
+                  .email(profile.getEmail())
+                  .profileLink(profile.getProfileUrl())
+                  .thumbnailUrl(profile.getThumbnailUrl())
+                  .build();
+              final Long userId = userDao.put(user);
+                userKey = userDao.getKey(userId);
             }
 
             conn = new DConnection();
@@ -261,7 +277,7 @@ public class OAuth2Resource {
             if (null != expiresInSeconds) {
                 conn.setExpireTime(new Date(System.currentTimeMillis() + expiresInSeconds*1000L));
             }
-            connectionDao.persist(conn);
+            connectionDao.put(conn);
         }
         else {
             userKey = conn.getUserKey();
@@ -272,7 +288,7 @@ public class OAuth2Resource {
 
             // existing user
             if (null == user) {
-                user = userDao.findByPrimaryKey(userKey);
+                user = userDao.get(userDao.getId(userKey));
             }
 
             // copy roles to Connection
@@ -284,12 +300,15 @@ public class OAuth2Resource {
 
               // update thumbnail Url
               user.setThumbnailUrl(profile.getThumbnailUrl());
-              userDao.update(user);
+              userDao.put(user);
             }
             LOGGER.debug("Roles set to {} from user {}", conn.getUserRoles(), user);
         }
-        connectionDao.update(conn);
-        connectionDao.delete(userKey, expiredTokens);
+        connectionDao.put(conn);
+        // TODO: batch ops
+        for (Long id : expiredTokens) {
+          connectionDao.delete(userKey, id);
+        }
         return conn;
     }
 }

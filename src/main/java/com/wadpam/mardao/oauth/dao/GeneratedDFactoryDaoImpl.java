@@ -20,7 +20,7 @@ import com.wadpam.mardao.oauth.domain.DFactory;
 /**
  * The DFactory domain-object specific finders and methods go in this POJO.
  * 
- * Generated on 2014-09-24T18:11:56.297+0200.
+ * Generated on 2014-10-05T10:31:57.096+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class GeneratedDFactoryDaoImpl
@@ -37,7 +37,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified baseUrl
    */
   public Iterable<DFactory> queryByBaseUrl(java.lang.String baseUrl) {
-    return queryByField(DFactoryMapper.Field.BASEURL.getFieldName(), baseUrl);
+    return queryByField(null, DFactoryMapper.Field.BASEURL.getFieldName(), baseUrl);
   }
 
   /**
@@ -46,7 +46,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified clientId
    */
   public Iterable<DFactory> queryByClientId(java.lang.String clientId) {
-    return queryByField(DFactoryMapper.Field.CLIENTID.getFieldName(), clientId);
+    return queryByField(null, DFactoryMapper.Field.CLIENTID.getFieldName(), clientId);
   }
 
   /**
@@ -55,7 +55,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified clientSecret
    */
   public Iterable<DFactory> queryByClientSecret(java.lang.String clientSecret) {
-    return queryByField(DFactoryMapper.Field.CLIENTSECRET.getFieldName(), clientSecret);
+    return queryByField(null, DFactoryMapper.Field.CLIENTSECRET.getFieldName(), clientSecret);
   }
 
   /**
@@ -64,7 +64,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified createdBy
    */
   public Iterable<DFactory> queryByCreatedBy(java.lang.String createdBy) {
-    return queryByField(DFactoryMapper.Field.CREATEDBY.getFieldName(), createdBy);
+    return queryByField(null, DFactoryMapper.Field.CREATEDBY.getFieldName(), createdBy);
   }
 
   /**
@@ -73,7 +73,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified createdDate
    */
   public Iterable<DFactory> queryByCreatedDate(java.util.Date createdDate) {
-    return queryByField(DFactoryMapper.Field.CREATEDDATE.getFieldName(), createdDate);
+    return queryByField(null, DFactoryMapper.Field.CREATEDDATE.getFieldName(), createdDate);
   }
 
   /**
@@ -82,7 +82,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified updatedBy
    */
   public Iterable<DFactory> queryByUpdatedBy(java.lang.String updatedBy) {
-    return queryByField(DFactoryMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
+    return queryByField(null, DFactoryMapper.Field.UPDATEDBY.getFieldName(), updatedBy);
   }
 
   /**
@@ -91,7 +91,7 @@ public class GeneratedDFactoryDaoImpl
    * @return an Iterable of DFactorys for the specified updatedDate
    */
   public Iterable<DFactory> queryByUpdatedDate(java.util.Date updatedDate) {
-    return queryByField(DFactoryMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
+    return queryByField(null, DFactoryMapper.Field.UPDATEDDATE.getFieldName(), updatedDate);
   }
 
 }

@@ -6,6 +6,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.inject.Inject;
 import com.wadpam.mardao.crud.CrudResource;
+import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
 import com.wadpam.mardao.oauth.domain.DConnection;
 
 
@@ -17,10 +18,10 @@ import com.wadpam.mardao.oauth.domain.DConnection;
  */
 @Path("api/connection")
 @Produces(MediaType.APPLICATION_JSON)
-public class DConnectionResource extends CrudResource<DConnection, Long, DConnectionDao> {
+public class DConnectionResource extends CrudResource<DConnection, Long, DConnectionDaoBean> {
 
   @Inject
-  public DConnectionResource(DConnectionDao dao) {
+  public DConnectionResource(DConnectionDaoBean dao) {
     super(dao);
     LOGGER.info("<init>");
   }

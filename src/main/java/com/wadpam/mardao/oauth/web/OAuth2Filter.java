@@ -7,6 +7,8 @@ package com.wadpam.mardao.oauth.web;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
+import com.wadpam.mardao.oauth.dao.DOAuth2UserDaoBean;
 import com.wadpam.mardao.oauth.domain.DConnection;
 import java.io.IOException;
 import java.util.Date;
@@ -19,9 +21,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sf.mardao.core.dao.DaoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import net.sf.mardao.dao.AbstractDao;
 
 /**
  *
@@ -33,15 +36,17 @@ public class OAuth2Filter implements Filter {
     public static final String NAME_USER_ID = "oauth2user.id";
     public static final String NAME_USER_KEY = "oauth2user.key";
     public static final String NAME_CONNECTION = "oauth2connection";
+    public static final String HEADER_AUTHORIZATION = "Authorization";
+    public static final String PREFIX_OAUTH = "OAuth ";
     
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Filter.class);
 
-    private final Provider<DConnectionDao> connectionDaoProvider;
-    private final Provider<DOAuth2UserDao> userDaoProvider;
+    private final Provider<DConnectionDaoBean> connectionDaoProvider;
+    private final Provider<DOAuth2UserDaoBean> userDaoProvider;
 
     @Inject
-    public OAuth2Filter(Provider<DConnectionDao> connectionDaoProvider, 
-            Provider<DOAuth2UserDao> userDaoProvider) {
+    public OAuth2Filter(Provider<DConnectionDaoBean> connectionDaoProvider,
+            Provider<DOAuth2UserDaoBean> userDaoProvider) {
         this.connectionDaoProvider = connectionDaoProvider;
         this.userDaoProvider = userDaoProvider;
     }
@@ -70,9 +75,9 @@ public class OAuth2Filter implements Filter {
         request.setAttribute(NAME_ACCESS_TOKEN, accessToken);
         request.setAttribute(NAME_CONNECTION, conn);
         request.setAttribute(NAME_USER_KEY, conn.getUserKey());
-        Long userId = userDaoProvider.get().getSimpleKeyByPrimaryKey(conn.getUserKey());
+        Long userId = userDaoProvider.get().getId(conn.getUserKey());
         request.setAttribute(NAME_USER_ID, userId);
-        DaoImpl.setPrincipalName(null != userId ? userId.toString() : null);
+        AbstractDao.setPrincipalName(null != userId ? userId.toString() : null);
         chain.doFilter(request, response);
     }
 
@@ -82,7 +87,18 @@ public class OAuth2Filter implements Filter {
 
     private static String getAccessToken(HttpServletRequest request) {
         String accessToken = request.getParameter(NAME_ACCESS_TOKEN);
-        // check for cookie:
+
+      // check for header
+      if (null == accessToken && null != request.getHeader(HEADER_AUTHORIZATION)) {
+        String auth = request.getHeader(HEADER_AUTHORIZATION);
+        LOGGER.debug("{}: {}", HEADER_AUTHORIZATION, auth);
+        int beginIndex = auth.indexOf(PREFIX_OAUTH);
+        if (-1 < beginIndex) {
+          accessToken = auth.substring(beginIndex + PREFIX_OAUTH.length());
+        }
+      }
+
+      // check for cookie:
         if (null == accessToken && null != request.getCookies()) {
             for (Cookie c : request.getCookies()) {
                 if (NAME_ACCESS_TOKEN.equals(c.getName())) {
@@ -99,7 +115,7 @@ public class OAuth2Filter implements Filter {
     }
 
     private DConnection verifyAccessToken(String accessToken) {
-        final DConnection conn = connectionDaoProvider.get().findByAccessToken(accessToken);
+        final DConnection conn = connectionDaoProvider.get().findByAccessToken(null, accessToken);
         if (null == conn) {
             LOGGER.debug("No such access_token {}", accessToken);
             return null;

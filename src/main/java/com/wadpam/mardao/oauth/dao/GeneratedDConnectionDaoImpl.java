@@ -20,7 +20,7 @@ import com.wadpam.mardao.oauth.domain.DConnection;
 /**
  * The DConnection domain-object specific finders and methods go in this POJO.
  * 
- * Generated on 2014-10-05T10:31:57.096+0200.
+ * Generated on 2014-10-13T19:31:54.266+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class GeneratedDConnectionDaoImpl

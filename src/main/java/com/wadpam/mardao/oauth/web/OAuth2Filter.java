@@ -71,12 +71,13 @@ public class OAuth2Filter implements Filter {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
-        
+
         request.setAttribute(NAME_ACCESS_TOKEN, accessToken);
         request.setAttribute(NAME_CONNECTION, conn);
         request.setAttribute(NAME_USER_KEY, conn.getUserKey());
         Long userId = userDaoProvider.get().getId(conn.getUserKey());
         request.setAttribute(NAME_USER_ID, userId);
+        LOGGER.debug("oauth displayName is {}, userId = {}", conn.getDisplayName(), userId);
         AbstractDao.setPrincipalName(null != userId ? userId.toString() : null);
         chain.doFilter(request, response);
     }

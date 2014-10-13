@@ -11,7 +11,7 @@ import com.wadpam.mardao.oauth.domain.DOAuth2User;
 /**
  * The DOAuth2User domain-object specific mapping methods go here.
  *
- * Generated on 2014-10-05T10:31:57.096+0200.
+ * Generated on 2014-10-13T19:31:54.266+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class DOAuth2UserMapper
@@ -56,7 +56,8 @@ public class DOAuth2UserMapper
     final DOAuth2User entity = new DOAuth2User();
 
     // set primary key:
-    entity.setId(supplier.getLong(value, Field.ID.getFieldName()));
+    final Object key = supplier.getKey(value, Field.ID.getFieldName());
+    entity.setId(supplier.toLongKey(key));
 
     // set all fields:
     entity.setCreatedBy(supplier.getString(value, Field.CREATEDBY.getFieldName()));
@@ -104,27 +105,32 @@ public class DOAuth2UserMapper
   @Override
   public void setParentKey(DOAuth2User entity, Object parentKey) {
     // this entity has no parent
+  }
+
+  @Override
+  public void updateEntityPostWrite(DOAuth2User entity, Object key, Object value) {
+    entity.setId(supplier.toLongKey(key));
+    entity.setCreatedBy(supplier.getString(value, Field.CREATEDBY.getFieldName()));
+    entity.setCreatedDate(supplier.getDate(value, Field.CREATEDDATE.getFieldName()));
+    entity.setUpdatedBy(supplier.getString(value, Field.UPDATEDBY.getFieldName()));
+    entity.setUpdatedDate(supplier.getDate(value, Field.UPDATEDDATE.getFieldName()));
 }
 
 @Override
   public String getKind() {
-    return Long.class.getSimpleName();
+    return DOAuth2User.class.getSimpleName();
   }
 
   @Override
   public Object toKey(Object parentKey, Long id) {
-    return supplier.toKey(parentKey, Long.class.getSimpleName(), id);
+    return supplier.toKey(parentKey, getKind(), id);
   }
 
   @Override
   public Object toWriteValue(DOAuth2User entity) {
     final Long id = getId(entity);
     final Object parentKey = getParentKey(entity);
-    final Object key = toKey(parentKey, id);
-    final Object value = supplier.createWriteValue(key);
-
-    // set the primary key:
-    supplier.setLong(value, Field.ID.getFieldName(), entity.getId());
+    final Object value = supplier.createWriteValue(parentKey, getKind(), id);
 
     // set all fields:
     supplier.setString(value, Field.CREATEDBY.getFieldName(), entity.getCreatedBy());

@@ -34,7 +34,6 @@ public class DOAuth2UserResource extends CrudResource<DOAuth2User, Long, DOAuth2
   @Inject
   public DOAuth2UserResource(DOAuth2UserDaoBean dao) {
     super(dao);
-    LOGGER.debug("<init>");
   }
 
     @GET

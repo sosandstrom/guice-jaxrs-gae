@@ -7,6 +7,7 @@ package com.wadpam.mardao.oauth.api;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
+import com.wadpam.mardao.crud.CrudResource;
 import com.wadpam.mardao.oauth.dao.DConnectionDaoBean;
 import com.wadpam.mardao.oauth.dao.DFactoryDaoBean;
 import com.wadpam.mardao.oauth.dao.DFactoryMapper;
@@ -44,8 +45,8 @@ import org.slf4j.LoggerFactory;
  * @author osandstrom
  */
 @Path("oauth/federated")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
+@Consumes(CrudResource.MIME_JSON_UTF8)
+@Produces(CrudResource.MIME_JSON_UTF8)
 public class OAuth2Resource {
     private static final boolean autoCreateUser = true;
     static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Resource.class);

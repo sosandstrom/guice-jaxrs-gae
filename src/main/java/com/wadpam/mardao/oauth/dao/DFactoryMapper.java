@@ -11,7 +11,7 @@ import com.wadpam.mardao.oauth.domain.DFactory;
 /**
  * The DFactory domain-object specific mapping methods go here.
  *
- * Generated on 2014-10-05T10:31:57.096+0200.
+ * Generated on 2014-10-13T19:31:54.266+0200.
  * @author mardao DAO generator (net.sf.mardao.plugin.ProcessDomainMojo)
  */
 public class DFactoryMapper
@@ -54,7 +54,8 @@ public class DFactoryMapper
     final DFactory entity = new DFactory();
 
     // set primary key:
-    entity.setId(supplier.getString(value, Field.ID.getFieldName()));
+    final Object key = supplier.getKey(value, Field.ID.getFieldName());
+    entity.setId(supplier.toStringKey(key));
 
     // set all fields:
     entity.setBaseUrl(supplier.getString(value, Field.BASEURL.getFieldName()));
@@ -100,27 +101,32 @@ public class DFactoryMapper
   @Override
   public void setParentKey(DFactory entity, Object parentKey) {
     // this entity has no parent
+  }
+
+  @Override
+  public void updateEntityPostWrite(DFactory entity, Object key, Object value) {
+    entity.setId(supplier.toStringKey(key));
+    entity.setCreatedBy(supplier.getString(value, Field.CREATEDBY.getFieldName()));
+    entity.setCreatedDate(supplier.getDate(value, Field.CREATEDDATE.getFieldName()));
+    entity.setUpdatedBy(supplier.getString(value, Field.UPDATEDBY.getFieldName()));
+    entity.setUpdatedDate(supplier.getDate(value, Field.UPDATEDDATE.getFieldName()));
 }
 
 @Override
   public String getKind() {
-    return String.class.getSimpleName();
+    return DFactory.class.getSimpleName();
   }
 
   @Override
   public Object toKey(Object parentKey, String id) {
-    return supplier.toKey(parentKey, String.class.getSimpleName(), id);
+    return supplier.toKey(parentKey, getKind(), id);
   }
 
   @Override
   public Object toWriteValue(DFactory entity) {
     final String id = getId(entity);
     final Object parentKey = getParentKey(entity);
-    final Object key = toKey(parentKey, id);
-    final Object value = supplier.createWriteValue(key);
-
-    // set the primary key:
-    supplier.setString(value, Field.ID.getFieldName(), entity.getId());
+    final Object value = supplier.createWriteValue(parentKey, getKind(), id);
 
     // set all fields:
     supplier.setString(value, Field.BASEURL.getFieldName(), entity.getBaseUrl());

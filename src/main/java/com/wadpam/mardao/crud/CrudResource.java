@@ -82,7 +82,7 @@ public class CrudResource<T, ID extends Serializable, D extends AbstractDao<T, I
                            @QueryParam("cursorKey") String cursorKey) {
     //FIXME: final CursorPage<T> page = dao.queryPage(pageSize, cursorKey);
     // return Response.ok(page).build();
-    return Response.status(Response.Status.CONFLICT).build();
+    return Response.status(405).build();
   }
 
   @POST
